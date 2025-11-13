@@ -1,0 +1,104 @@
+---
+title: Analyzing the bikeways Utah data
+subtitle: Comparing the bikeways by type and against the highway mileage
+description: Lorem Ipsum
+author:
+ - name: Pukar Bhandari
+   email: pukar.bhandari@wfrc.utah.gov
+   affiliation:
+     - name: Wasatch Front Regional Council
+       url: "https://wfrc.utah.gov/"
+date: "2025-11-16"
+---
+
+# Setup Environment
+
+## Install Packages
+
+```r
+install.packages("dplyr")
+install.packages("sf")
+install.packages("arcgislayers")
+install.packages("janitor")
+install.packages("tmap")
+```
+
+## Load Packages
+
+```{r}
+library(dplyr)
+library(sf)
+library(arcgislayers)
+library(janitor)
+library(tmap)
+```
+
+## Environment Variables
+
+```{r}
+PROJECT_CRS = "EPSG:3566"
+
+tmap::tmap_mode("view")
+```
+
+# Read Data from UGRC
+
+## State of Utah
+
+```{r}
+sf_ut_bound = arcgislayers::arc_read(
+    "https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahStateBoundary/FeatureServer/0",
+    crs = PROJECT_CRS
+) |>
+    janitor::clean_names()
+```
+
+```{r}
+#| eval: false
+tmap::qtm(sf_ut_bound)
+```
+
+## Utah City Boundaries
+
+```{r}
+sf_ut_cities = arcgislayers::arc_read(
+    "https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahMunicipalBoundaries/FeatureServer/0",
+    crs = PROJECT_CRS
+) |>
+    janitor::clean_names()
+```
+
+```{r}
+#| eval: false
+tmap::qtm(sf_ut_cities)
+```
+
+## Utah Roadways
+
+```{r}
+sf_ut_roadways = arcgislayers::arc_read(
+    "https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahRoads/FeatureServer/0",
+    crs = PROJECT_CRS
+) |>
+    janitor::clean_names()
+```
+
+```{r}
+#| eval: false
+tmap::qtm(sf_ut_roadways)
+```
+
+## Utah Bikeways
+
+```{r}
+sf_ut_bikeways = arcgislayers::arc_read(
+    "https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/Bikeways/FeatureServer/0",
+    crs = PROJECT_CRS
+) |>
+    janitor::clean_names()
+```
+
+```{r}
+#| eval: false
+tmap::qtm(sf_ut_bikeways)
+```

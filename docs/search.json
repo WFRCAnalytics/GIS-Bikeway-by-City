@@ -1,0 +1,58 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Analyzing the bikeways Utah data",
+    "section": "",
+    "text": "install.packages(\"dplyr\")\ninstall.packages(\"sf\")\ninstall.packages(\"arcgislayers\")\ninstall.packages(\"janitor\")\ninstall.packages(\"tmap\")\n\n\nShow the codelibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\nShow the codelibrary(sf)\n\nLinking to GEOS 3.13.1, GDAL 3.11.0, PROJ 9.6.0; sf_use_s2() is TRUE\n\nShow the codelibrary(arcgislayers)\nlibrary(janitor)\n\n\nAttaching package: 'janitor'\n\n\nThe following objects are masked from 'package:stats':\n\n    chisq.test, fisher.test\n\nShow the codelibrary(tmap)\n\n\n\n\nShow the codePROJECT_CRS = \"EPSG:3566\"\n\ntmap::tmap_mode(\"view\")\n\nℹ tmap modes \"plot\" - \"view\"\nℹ toggle with `tmap::ttm()`"
+  },
+  {
+    "objectID": "index.html#install-packages",
+    "href": "index.html#install-packages",
+    "title": "Analyzing the bikeways Utah data",
+    "section": "",
+    "text": "install.packages(\"dplyr\")\ninstall.packages(\"sf\")\ninstall.packages(\"arcgislayers\")\ninstall.packages(\"janitor\")\ninstall.packages(\"tmap\")"
+  },
+  {
+    "objectID": "index.html#load-packages",
+    "href": "index.html#load-packages",
+    "title": "Analyzing the bikeways Utah data",
+    "section": "",
+    "text": "Show the codelibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\nShow the codelibrary(sf)\n\nLinking to GEOS 3.13.1, GDAL 3.11.0, PROJ 9.6.0; sf_use_s2() is TRUE\n\nShow the codelibrary(arcgislayers)\nlibrary(janitor)\n\n\nAttaching package: 'janitor'\n\n\nThe following objects are masked from 'package:stats':\n\n    chisq.test, fisher.test\n\nShow the codelibrary(tmap)"
+  },
+  {
+    "objectID": "index.html#environment-variables",
+    "href": "index.html#environment-variables",
+    "title": "Analyzing the bikeways Utah data",
+    "section": "",
+    "text": "Show the codePROJECT_CRS = \"EPSG:3566\"\n\ntmap::tmap_mode(\"view\")\n\nℹ tmap modes \"plot\" - \"view\"\nℹ toggle with `tmap::ttm()`"
+  },
+  {
+    "objectID": "index.html#state-of-utah",
+    "href": "index.html#state-of-utah",
+    "title": "Analyzing the bikeways Utah data",
+    "section": "\n2.1 State of Utah",
+    "text": "2.1 State of Utah\n\nShow the codesf_ut_bound = arcgislayers::arc_read(\n    \"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahStateBoundary/FeatureServer/0\",\n    crs = PROJECT_CRS\n) |&gt;\n    janitor::clean_names()\n\nRegistered S3 method overwritten by 'jsonify':\n  method     from    \n  print.json jsonlite\n\n\n\nShow the codetmap::qtm(sf_ut_bound)"
+  },
+  {
+    "objectID": "index.html#utah-city-boundaries",
+    "href": "index.html#utah-city-boundaries",
+    "title": "Analyzing the bikeways Utah data",
+    "section": "\n2.2 Utah City Boundaries",
+    "text": "2.2 Utah City Boundaries\n\nShow the codesf_ut_cities = arcgislayers::arc_read(\n    \"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahMunicipalBoundaries/FeatureServer/0\",\n    crs = PROJECT_CRS\n) |&gt;\n    janitor::clean_names()\n\n\n\nShow the codetmap::qtm(sf_ut_cities)"
+  },
+  {
+    "objectID": "index.html#utah-roadways",
+    "href": "index.html#utah-roadways",
+    "title": "Analyzing the bikeways Utah data",
+    "section": "\n2.3 Utah Roadways",
+    "text": "2.3 Utah Roadways\n\nShow the codesf_ut_roadways = arcgislayers::arc_read(\n    \"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahRoads/FeatureServer/0\",\n    crs = PROJECT_CRS\n) |&gt;\n    janitor::clean_names()\n\n[working] (195 + 0) -&gt; 10 -&gt; 1 | ■                                  0%\n\n\n[working] (183 + 0) -&gt; 10 -&gt; 13 | ■■■                                6%\n\n\n[working] (164 + 0) -&gt; 10 -&gt; 32 | ■■■■■■                            16%\n\n\n[working] (147 + 0) -&gt; 10 -&gt; 49 | ■■■■■■■■                          24%\n\n\n[working] (136 + 0) -&gt; 10 -&gt; 60 | ■■■■■■■■■■                        29%\n\n\n[working] (126 + 0) -&gt; 10 -&gt; 70 | ■■■■■■■■■■■                       34%\n\n\n[working] (116 + 0) -&gt; 10 -&gt; 80 | ■■■■■■■■■■■■■                     39%\n\n\n[working] (111 + 0) -&gt; 10 -&gt; 85 | ■■■■■■■■■■■■■                     41%\n\n\n[working] (105 + 0) -&gt; 10 -&gt; 91 | ■■■■■■■■■■■■■■                    44%\n\n\n[working] (96 + 0) -&gt; 10 -&gt; 100 | ■■■■■■■■■■■■■■■■                  49%\n\n\n[working] (87 + 0) -&gt; 10 -&gt; 109 | ■■■■■■■■■■■■■■■■■                 53%\n\n\n[working] (83 + 0) -&gt; 10 -&gt; 113 | ■■■■■■■■■■■■■■■■■                 55%\n\n\n[working] (79 + 0) -&gt; 10 -&gt; 117 | ■■■■■■■■■■■■■■■■■■                57%\n\n\n[working] (73 + 0) -&gt; 10 -&gt; 123 | ■■■■■■■■■■■■■■■■■■■               60%\n\n\n[working] (67 + 0) -&gt; 10 -&gt; 129 | ■■■■■■■■■■■■■■■■■■■■              63%\n\n\n[working] (64 + 0) -&gt; 10 -&gt; 132 | ■■■■■■■■■■■■■■■■■■■■              64%\n\n\n[working] (59 + 0) -&gt; 10 -&gt; 137 | ■■■■■■■■■■■■■■■■■■■■■             67%\n\n\n[working] (54 + 0) -&gt; 10 -&gt; 142 | ■■■■■■■■■■■■■■■■■■■■■■            69%\n\n\n[working] (51 + 0) -&gt; 10 -&gt; 145 | ■■■■■■■■■■■■■■■■■■■■■■            70%\n\n\n[working] (46 + 0) -&gt; 10 -&gt; 150 | ■■■■■■■■■■■■■■■■■■■■■■■           73%\n\n\n[working] (40 + 0) -&gt; 10 -&gt; 156 | ■■■■■■■■■■■■■■■■■■■■■■■■          76%\n\n\n[working] (37 + 0) -&gt; 10 -&gt; 159 | ■■■■■■■■■■■■■■■■■■■■■■■■          77%\n\n\n[working] (34 + 0) -&gt; 10 -&gt; 162 | ■■■■■■■■■■■■■■■■■■■■■■■■■         79%\n\n\n[working] (28 + 0) -&gt; 10 -&gt; 168 | ■■■■■■■■■■■■■■■■■■■■■■■■■         82%\n\n\n[working] (26 + 0) -&gt; 10 -&gt; 170 | ■■■■■■■■■■■■■■■■■■■■■■■■■■        83%\n\n\n[working] (21 + 0) -&gt; 10 -&gt; 175 | ■■■■■■■■■■■■■■■■■■■■■■■■■■        85%\n\n\n[working] (17 + 0) -&gt; 10 -&gt; 179 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■       87%\n\n\n[working] (15 + 0) -&gt; 10 -&gt; 181 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■       88%\n\n\n[working] (9 + 0) -&gt; 10 -&gt; 187 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      91%\n\n\n[working] (8 + 0) -&gt; 10 -&gt; 188 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      91%\n\n\n[working] (4 + 0) -&gt; 10 -&gt; 192 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■     93%\n\n\n[working] (0 + 0) -&gt; 7 -&gt; 199 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    97%\n\n\n[working] (0 + 0) -&gt; 3 -&gt; 203 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   99%\n\n\n[working] (0 + 0) -&gt; 0 -&gt; 206 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100%\n\n\n\nShow the codetmap::qtm(sf_ut_roadways)"
+  },
+  {
+    "objectID": "index.html#utah-bikeways",
+    "href": "index.html#utah-bikeways",
+    "title": "Analyzing the bikeways Utah data",
+    "section": "\n2.4 Utah Bikeways",
+    "text": "2.4 Utah Bikeways\n\nShow the codesf_ut_bikeways = arcgislayers::arc_read(\n    \"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/Bikeways/FeatureServer/0\",\n    crs = PROJECT_CRS\n) |&gt;\n    janitor::clean_names()\n\n[working] (35 + 0) -&gt; 10 -&gt; 6 | ■■■■■                             12%\n\n\n[working] (0 + 0) -&gt; 0 -&gt; 51 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100%\n\n\n\nShow the codetmap::qtm(sf_ut_bikeways)"
+  }
+]
