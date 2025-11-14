@@ -297,7 +297,8 @@ bikeway_miles_by_city <- sf_ut_bikeways |>
 
     # Add mileage to each bikeway segment
     dplyr::mutate(
-      miles = units::set_units(sf::st_length(SHAPE), "mile")
+      # FIXME: weight each side as 0.5 of the segment length
+      miles = units::set_units(sf::st_length(SHAPE), "mile") * 0.5
     ) |>
 
     # Spatial join: attach each segment to the city it falls within
@@ -333,13 +334,13 @@ bikeway_miles_by_city <- sf_ut_bikeways |>
 bikeway_miles_by_city <- bikeway_miles_by_city |>
     dplyr::rowwise() |>
     dplyr::mutate(
-      total_bike_lane_miles = sum(dplyr::c_across(!city_name))
+      `All Biking Facilities` = sum(dplyr::c_across(!city_name))
     ) |>
     dplyr::ungroup()
 
 # View the results
 bikeway_miles_by_city |>
-  dplyr::arrange(dplyr::desc(total_bike_lane_miles))
+  dplyr::arrange(dplyr::desc(`All Biking Facilities`))
 ```
 
 **Key Finding:** Bikeway infrastructure varies significantly by facility type across municipalities. The dataset includes various facility types such as bike lanes, protected bike lanes, shared-use paths, and trails.
@@ -356,20 +357,22 @@ Each row represents a municipality, with columns for total road lane miles follo
 # Combine with roads
 combined_miles_by_city <- road_miles_by_city |>
   # Convert road lane miles to numeric
-  dplyr::mutate(road_lane_miles = as.numeric(total_lane_miles)) |>
-  dplyr::select(city_name, road_lane_miles) |>
+  dplyr::mutate(`All Roads` = as.numeric(total_lane_miles)) |>
+  dplyr::select(city_name, `All Roads`) |>
   # Join with bikeway data
   dplyr::right_join(bikeway_miles_by_city, by = "city_name") |>
   # Reorder columns: city_name, bike categories, total bike, then road
   dplyr::select(
     city_name,
     dplyr::all_of(facility_class_order),   # bike lane categories
-    total_bike_lane_miles,
-    road_lane_miles
-  )
+    - Other,
+    # `All Biking Facilities`,
+    `All Roads`
+  ) |>
+  # Round all numeric columns to one decimal
+  dplyr::mutate(dplyr::across(where(is.numeric), \(x) round(x, 1)))
 
-combined_miles_by_city |>
-  dplyr::arrange(dplyr::desc(road_lane_miles))
+combined_miles_by_city
 ```
 
 **Key Finding:** The ratio of bikeway lane miles to road lane miles varies considerably across Utah municipalities, indicating different levels of investment in bicycle infrastructure relative to overall roadway networks.
