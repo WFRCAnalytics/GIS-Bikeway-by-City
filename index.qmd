@@ -293,6 +293,7 @@ The `pivot_longer()` function stacks `facility1` and `facility2` into separate r
 ```{r}
 # Prepare bikeways with both directions as lanes
 bikeway_miles_by_city <- sf_ut_bikeways |>
+    dplyr::filter(cartocode != "9") |> # Remove 'sidewalks' and 'virtual link' connections
     dplyr::select(facility1_class, facility2_class) |>
 
     # Add mileage to each bikeway segment
