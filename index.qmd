@@ -224,29 +224,63 @@ road_miles_by_city |>
 
 # Bikeway Miles by Municipality
 
-## Process Bikeway Types to Categories
+## Reclassify Bikeway Types to Categories
 
 We use `forcats` package to respect the hierarchy of the bicycle facilities.
 
 ```{r}
-facility_levels <- c(
-  "Cycle track, at-grade, protected with parking (1A)",
-  "Cycle track, protected with barrier (1B)",
-  "Buffered bike lane (2A)",
-  "Bike lane (2B)",
-  "Cycle track, raised and curb separated (1C)",
-  "Marked shared roadway (3B)",
-  "Signed shared roadway (3C)",
-  "Shoulder bikeway (3A)",
-  "Other bike route, unspecified (3)",
-  "Trail or Pathway",
-  "Not Available"
+# Define the order of facility classes
+facility_class_order <- c(
+  "Paved Path",
+  "Protected Bike Lane",
+  "Bike Lane",
+  "Marked Route",
+  "Unmarked Route",
+  "Other"
 )
 
+# Reclassify bike facilities into broader categories as factors
 sf_ut_bikeways <- sf_ut_bikeways |>
   dplyr::mutate(
-    facility1 = forcats::fct_relevel(facility1, facility_levels),
-    facility2 = forcats::fct_relevel(facility2, facility_levels)
+    facility1_class = dplyr::case_when(
+      facility1 == "Trail or Pathway" ~ "Paved Path",
+      facility1 %in% c(
+        "Cycle track, at-grade, protected with parking (1A)",
+        "Cycle track, protected with barrier (1B)",
+        "Cycle track, raised and curb separated (1C)"
+      ) ~ "Protected Bike Lane",
+      facility1 %in% c(
+        "Buffered bike lane (2A)",
+        "Bike lane (2B)"
+      ) ~ "Bike Lane",
+      facility1 %in% c(
+        "Marked shared roadway (3B)",
+        "Signed shared roadway (3C)"
+      ) ~ "Marked Route",
+      facility1 == "Shoulder bikeway (3A)" ~ "Unmarked Route",
+      TRUE ~ "Other"
+    ),
+    facility2_class = dplyr::case_when(
+      facility2 == "Trail or Pathway" ~ "Paved Path",
+      facility2 %in% c(
+        "Cycle track, at-grade, protected with parking (1A)",
+        "Cycle track, protected with barrier (1B)",
+        "Cycle track, raised and curb separated (1C)"
+      ) ~ "Protected Bike Lane",
+      facility2 %in% c(
+        "Buffered bike lane (2A)",
+        "Bike lane (2B)"
+      ) ~ "Bike Lane",
+      facility2 %in% c(
+        "Marked shared roadway (3B)",
+        "Signed shared roadway (3C)"
+      ) ~ "Marked Route",
+      facility2 == "Shoulder bikeway (3A)" ~ "Unmarked Route",
+      TRUE ~ "Other"
+    ),
+    # Convert to factors with proper ordering
+    facility1_class = factor(facility1_class, levels = facility_class_order),
+    facility2_class = factor(facility2_class, levels = facility_class_order)
   )
 ```
 
@@ -259,7 +293,7 @@ The `pivot_longer()` function stacks `facility1` and `facility2` into separate r
 ```{r}
 # Prepare bikeways with both directions as lanes
 bikeway_miles_by_city <- sf_ut_bikeways |>
-    dplyr::select(facility1, facility2) |>
+    dplyr::select(facility1_class, facility2_class) |>
 
     # Add mileage to each bikeway segment
     dplyr::mutate(
@@ -277,20 +311,20 @@ bikeway_miles_by_city <- sf_ut_bikeways |>
 
     # Treat facility1 and facility2 as separate lane directions
     tidyr::pivot_longer(
-      cols = c(facility1, facility2),
-      values_to = "facility"
+      cols = c(facility1_class, facility2_class),
+      values_to = "facility_class"
     ) |>
 
-    # Summarize total lane miles by city and facility type
-    dplyr::group_by(city_name, facility) |>
+    # Summarize total lane miles by city and facility class
+    dplyr::group_by(city_name, facility_class) |>
     dplyr::summarize(
       total_lane_miles = sum(as.numeric(miles), na.rm = TRUE),
       .groups = "drop"
     ) |>
 
-    # Make facility types into columns
+    # Make facility class into columns
     tidyr::pivot_wider(
-      names_from = facility,
+      names_from = facility_class,
       values_from = total_lane_miles,
       values_fill = 0
     )
@@ -329,7 +363,7 @@ combined_miles_by_city <- road_miles_by_city |>
   # Reorder columns: city_name, bike categories, total bike, then road
   dplyr::select(
     city_name,
-    dplyr::all_of(facility_levels),   # bike lane categories
+    dplyr::all_of(facility_class_order),   # bike lane categories
     total_bike_lane_miles,
     road_lane_miles
   )
