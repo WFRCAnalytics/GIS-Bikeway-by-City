@@ -1,2 +1,4 @@
 /.quarto/
 **/*.quarto_ipynb
+
+_data/UGRC/UtahRoads.gdb/a00000009.gdbtable

@@ -6,8 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="author" content="Pukar Bhandari">
 <meta name="dcterms.date" content="2025-11-16">
-<meta name="description" content="Lorem Ipsum">
-<title>Analyzing the bikeways Utah data – Analytics</title>
+<meta name="description" content="This analysis calculates and compares roadway lane miles and bikeway facility miles across Utah municipalities using spatial data from the Utah Geospatial Resource Center (UGRC).">
+<title>Analyzing the Utah Bikeways data – Analytics</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -296,11 +296,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </div> <!-- /container-fluid -->
     </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default page-columns page-full"><div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <div class="quarto-title-block"><div><h1 class="title">Analyzing the bikeways Utah data</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
-            <p class="subtitle lead">Comparing the bikeways by type and against the highway mileage</p>
+      <div class="quarto-title-block"><div><h1 class="title">Analyzing the Utah Bikeways data</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+            <p class="subtitle lead">Comparing the bikeways by type with the highway mileage for each city</p>
                   <div>
         <div class="description">
-          Lorem Ipsum
+          This analysis calculates and compares roadway lane miles and bikeway facility miles across Utah municipalities using spatial data from the Utah Geospatial Resource Center (UGRC).
         </div>
       </div>
                 </div>
@@ -343,39 +343,74 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
    
   <ul>
-<li>
-<a href="#setup-environment" id="toc-setup-environment" class="nav-link active" data-scroll-target="#setup-environment"><span class="header-section-number">1</span> Setup Environment</a>
+<li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li>
+<a href="#setup-environment" id="toc-setup-environment" class="nav-link" data-scroll-target="#setup-environment"><span class="header-section-number">2</span> Setup Environment</a>
   <ul class="collapse">
-<li><a href="#install-packages" id="toc-install-packages" class="nav-link" data-scroll-target="#install-packages"><span class="header-section-number">1.1</span> Install Packages</a></li>
-  <li><a href="#load-packages" id="toc-load-packages" class="nav-link" data-scroll-target="#load-packages"><span class="header-section-number">1.2</span> Load Packages</a></li>
-  <li><a href="#environment-variables" id="toc-environment-variables" class="nav-link" data-scroll-target="#environment-variables"><span class="header-section-number">1.3</span> Environment Variables</a></li>
+<li><a href="#install-packages" id="toc-install-packages" class="nav-link" data-scroll-target="#install-packages"><span class="header-section-number">2.1</span> Install Packages</a></li>
+  <li><a href="#load-packages" id="toc-load-packages" class="nav-link" data-scroll-target="#load-packages"><span class="header-section-number">2.2</span> Load Packages</a></li>
+  <li><a href="#environment-variables" id="toc-environment-variables" class="nav-link" data-scroll-target="#environment-variables"><span class="header-section-number">2.3</span> Environment Variables</a></li>
   </ul>
 </li>
   <li>
-<a href="#read-data-from-ugrc" id="toc-read-data-from-ugrc" class="nav-link" data-scroll-target="#read-data-from-ugrc"><span class="header-section-number">2</span> Read Data from UGRC</a>
+<a href="#read-data-from-ugrc" id="toc-read-data-from-ugrc" class="nav-link" data-scroll-target="#read-data-from-ugrc"><span class="header-section-number">3</span> Read Data from UGRC</a>
   <ul class="collapse">
-<li><a href="#state-of-utah" id="toc-state-of-utah" class="nav-link" data-scroll-target="#state-of-utah"><span class="header-section-number">2.1</span> State of Utah</a></li>
-  <li><a href="#utah-city-boundaries" id="toc-utah-city-boundaries" class="nav-link" data-scroll-target="#utah-city-boundaries"><span class="header-section-number">2.2</span> Utah City Boundaries</a></li>
-  <li><a href="#utah-roadways" id="toc-utah-roadways" class="nav-link" data-scroll-target="#utah-roadways"><span class="header-section-number">2.3</span> Utah Roadways</a></li>
-  <li><a href="#utah-bikeways" id="toc-utah-bikeways" class="nav-link" data-scroll-target="#utah-bikeways"><span class="header-section-number">2.4</span> Utah Bikeways</a></li>
+<li><a href="#utah-city-boundaries" id="toc-utah-city-boundaries" class="nav-link" data-scroll-target="#utah-city-boundaries"><span class="header-section-number">3.1</span> Utah City Boundaries</a></li>
+  <li><a href="#utah-roadways" id="toc-utah-roadways" class="nav-link" data-scroll-target="#utah-roadways"><span class="header-section-number">3.2</span> Utah Roadways</a></li>
+  <li><a href="#utah-bikeways" id="toc-utah-bikeways" class="nav-link" data-scroll-target="#utah-bikeways"><span class="header-section-number">3.3</span> Utah Bikeways</a></li>
   </ul>
 </li>
+  <li>
+<a href="#road-lane-miles-by-municipality" id="toc-road-lane-miles-by-municipality" class="nav-link" data-scroll-target="#road-lane-miles-by-municipality"><span class="header-section-number">4</span> Road Lane Miles by Municipality</a>
+  <ul class="collapse">
+<li><a href="#calculate-lane-miles" id="toc-calculate-lane-miles" class="nav-link" data-scroll-target="#calculate-lane-miles"><span class="header-section-number">4.1</span> Calculate Lane Miles</a></li>
+  <li><a href="#aggregate-by-municipality" id="toc-aggregate-by-municipality" class="nav-link" data-scroll-target="#aggregate-by-municipality"><span class="header-section-number">4.2</span> Aggregate by Municipality</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#bikeway-miles-by-municipality" id="toc-bikeway-miles-by-municipality" class="nav-link" data-scroll-target="#bikeway-miles-by-municipality"><span class="header-section-number">5</span> Bikeway Miles by Municipality</a>
+  <ul class="collapse">
+<li><a href="#calculate-bikeway-lane-miles-by-facility-type" id="toc-calculate-bikeway-lane-miles-by-facility-type" class="nav-link" data-scroll-target="#calculate-bikeway-lane-miles-by-facility-type"><span class="header-section-number">5.1</span> Calculate Bikeway Lane Miles by Facility Type</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#combine-dataframes" id="toc-combine-dataframes" class="nav-link" data-scroll-target="#combine-dataframes"><span class="header-section-number">6</span> Combine dataframes</a>
+  <ul class="collapse">
+<li><a href="#create-multimodal-summary" id="toc-create-multimodal-summary" class="nav-link" data-scroll-target="#create-multimodal-summary"><span class="header-section-number">6.1</span> Create Multimodal Summary</a></li>
+  </ul>
+</li>
+  <li><a href="#export-final-results" id="toc-export-final-results" class="nav-link" data-scroll-target="#export-final-results"><span class="header-section-number">7</span> Export Final results</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">8</span> Conclusion</a></li>
   </ul></nav>
     </div>
 <!-- main -->
-<main class="content quarto-banner-title-block" id="quarto-document-content"><section id="setup-environment" class="level1" data-number="1"><h1 data-number="1">
-<span class="header-section-number">1</span> Setup Environment</h1>
-<section id="install-packages" class="level2" data-number="1.1"><h2 data-number="1.1" class="anchored" data-anchor-id="install-packages">
-<span class="header-section-number">1.1</span> Install Packages</h2>
+<main class="content quarto-banner-title-block" id="quarto-document-content"><section id="introduction" class="level1" data-number="1"><h1 data-number="1">
+<span class="header-section-number">1</span> Introduction</h1>
+<p>This analysis examines the distribution of roadway and bikeway infrastructure across Utah municipalities. The primary objectives are to:</p>
+<ol type="1">
+<li>Calculate total road lane miles for each municipality</li>
+<li>Calculate bikeway lane miles by facility type for each municipality</li>
+<li>Compare roadway and bikeway infrastructure across municipalities</li>
+</ol>
+<p>All spatial data is sourced from the Utah Geospatial Resource Center (UGRC) and processed using the R spatial ecosystem.</p>
+</section><section id="setup-environment" class="level1" data-number="2"><h1 data-number="2">
+<span class="header-section-number">2</span> Setup Environment</h1>
+<section id="install-packages" class="level2" data-number="2.1"><h2 data-number="2.1" class="anchored" data-anchor-id="install-packages">
+<span class="header-section-number">2.1</span> Install Packages</h2>
+<p>The following packages are required for this analysis. Install them if not already available in your R environment.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"tidyr"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"readr"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"fs"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"sf"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"arcgislayers"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"janitor"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"units"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"tmap"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section><section id="load-packages" class="level2" data-number="1.2"><h2 data-number="1.2" class="anchored" data-anchor-id="load-packages">
-<span class="header-section-number">1.2</span> Load Packages</h2>
+</section><section id="load-packages" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="load-packages">
+<span class="header-section-number">2.2</span> Load Packages</h2>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span> <span class="co"># for data manipulation</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stderr">
 <pre><code>
 Attaching package: 'dplyr'</code></pre>
@@ -390,12 +425,15 @@ Attaching package: 'dplyr'</code></pre>
 
     intersect, setdiff, setequal, union</code></pre>
 </div>
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span> <span class="co"># for tidy data operations (pivot functions)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://readr.tidyverse.org">readr</a></span><span class="op">)</span> <span class="co"># read and write tabular data</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://fs.r-lib.org">fs</a></span><span class="op">)</span> <span class="co"># for file system management</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span> <span class="co"># for simple feature geometries</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stderr">
 <pre><code>Linking to GEOS 3.13.1, GDAL 3.11.0, PROJ 9.6.0; sf_use_s2() is TRUE</code></pre>
 </div>
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://developers.arcgis.com/r-bridge">arcgislayers</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sfirke/janitor">janitor</a></span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://developers.arcgis.com/r-bridge">arcgislayers</a></span><span class="op">)</span> <span class="co"># to read arcgis rest services</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sfirke/janitor">janitor</a></span><span class="op">)</span> <span class="co"># clean column names</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stderr">
 <pre><code>
 Attaching package: 'janitor'</code></pre>
@@ -405,193 +443,371 @@ Attaching package: 'janitor'</code></pre>
 
     chisq.test, fisher.test</code></pre>
 </div>
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap">tmap</a></span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-quantities.github.io/units/">units</a></span><span class="op">)</span> <span class="co"># set and adjust units of measurement</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stderr">
+<pre><code>udunits database from C:/Users/Pukar.Bhandari/AppData/Local/R/win-library/4.5/units/share/udunits/udunits2.xml</code></pre>
+</div>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap">tmap</a></span><span class="op">)</span> <span class="co"># view sf objects</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section><section id="environment-variables" class="level2" data-number="1.3"><h2 data-number="1.3" class="anchored" data-anchor-id="environment-variables">
-<span class="header-section-number">1.3</span> Environment Variables</h2>
+</section><section id="environment-variables" class="level2" data-number="2.3"><h2 data-number="2.3" class="anchored" data-anchor-id="environment-variables">
+<span class="header-section-number">2.3</span> Environment Variables</h2>
+<p>We use EPSG:3566 (NAD83(HARN) / Utah North) projection, which uses US survey feet as the base unit. This projection is appropriate for statewide analysis in Utah and ensures accurate distance calculations.</p>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">PROJECT_CRS</span> <span class="op">=</span> <span class="st">"EPSG:3566"</span></span>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Set Project CRS</span></span>
+<span><span class="va">PROJECT_CRS</span> <span class="op">=</span> <span class="st">"EPSG:3566"</span></span>
 <span></span>
+<span><span class="co"># Set tmap mode to interactive</span></span>
 <span><span class="fu">tmap</span><span class="fu">::</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_mode.html">tmap_mode</a></span><span class="op">(</span><span class="st">"view"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stderr">
 <pre><code>ℹ tmap modes "plot" - "view"
 ℹ toggle with `tmap::ttm()`</code></pre>
 </div>
 </div>
-</section></section><section id="read-data-from-ugrc" class="level1" data-number="2"><h1 data-number="2">
-<span class="header-section-number">2</span> Read Data from UGRC</h1>
-<section id="state-of-utah" class="level2" data-number="2.1"><h2 data-number="2.1" class="anchored" data-anchor-id="state-of-utah">
-<span class="header-section-number">2.1</span> State of Utah</h2>
+</section></section><section id="read-data-from-ugrc" class="level1" data-number="3"><h1 data-number="3">
+<span class="header-section-number">3</span> Read Data from UGRC</h1>
+<p>All spatial datasets are downloaded from UGRC’s ArcGIS REST services. To improve performance and enable offline work, the data is cached locally as GeoDatabase files. The code checks if local copies exist before downloading.</p>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sf_ut_bound</span> <span class="op">=</span> <span class="fu">arcgislayers</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arcgislayers/man/arc_read.html">arc_read</a></span><span class="op">(</span></span>
-<span>    <span class="st">"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahStateBoundary/FeatureServer/0"</span>,</span>
-<span>    crs <span class="op">=</span> <span class="va">PROJECT_CRS</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html">clean_names</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stderr">
-<pre><code>Registered S3 method overwritten by 'jsonify':
-  method     from    
-  print.json jsonlite</code></pre>
-</div>
-</div>
-<div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">tmap</span><span class="fu">::</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/qtm.html">qtm</a></span><span class="op">(</span><span class="va">sf_ut_bound</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># set data folder</span></span>
+<span><span class="va">dir_data</span> <span class="op">&lt;-</span> <span class="st">"_data/UGRC"</span></span>
+<span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/create.html">dir_create</a></span><span class="op">(</span><span class="va">dir_data</span><span class="op">)</span> <span class="co"># Create a directory if it doesnt exist</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section><section id="utah-city-boundaries" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="utah-city-boundaries">
-<span class="header-section-number">2.2</span> Utah City Boundaries</h2>
+<section id="utah-city-boundaries" class="level2" data-number="3.1"><h2 data-number="3.1" class="anchored" data-anchor-id="utah-city-boundaries">
+<span class="header-section-number">3.1</span> Utah City Boundaries</h2>
+<p>Municipal boundaries are used to aggregate roadway and bikeway data by city. These boundaries represent the legal limits of incorporated municipalities in Utah.</p>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sf_ut_cities</span> <span class="op">=</span> <span class="fu">arcgislayers</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arcgislayers/man/arc_read.html">arc_read</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Define paths</span></span>
+<span><span class="va">path_ut_cities</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">dir_data</span>, <span class="st">"UtahMunicipalBoundaries.gdb"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Download if not exists</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/file_access.html">file_exists</a></span><span class="op">(</span><span class="va">path_ut_cities</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># Read data using arcgis package</span></span>
+<span>  <span class="va">sf_ut_cities</span> <span class="op">&lt;-</span> <span class="fu">arcgislayers</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arcgislayers/man/arc_read.html">arc_read</a></span><span class="op">(</span></span>
 <span>    <span class="st">"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahMunicipalBoundaries/FeatureServer/0"</span>,</span>
 <span>    crs <span class="op">=</span> <span class="va">PROJECT_CRS</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html">clean_names</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html">clean_names</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="co"># Write to a GeoDatabase</span></span>
+<span>  <span class="va">sf_ut_cities</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_write.html">st_write</a></span><span class="op">(</span><span class="va">path_ut_cities</span>, layer <span class="op">=</span> <span class="st">"UtahMunicipalBoundaries"</span>, append <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="co"># Read from local copy</span></span>
+<span>  <span class="va">sf_ut_cities</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">path_ut_cities</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">PROJECT_CRS</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `UtahMunicipalBoundaries' from data source 
+  `D:\GitHub\GIS-Bikeway-by-City\_data\UGRC\UtahMunicipalBoundaries.gdb' 
+  using driver `OpenFileGDB'
+Simple feature collection with 259 features and 17 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 934991.8 ymin: 6077738 xmax: 2272474 ymax: 7898798
+Projected CRS: NAD83 / Utah Central (ftUS)</code></pre>
+</div>
 </div>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">tmap</span><span class="fu">::</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/qtm.html">qtm</a></span><span class="op">(</span><span class="va">sf_ut_cities</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">tmap</span><span class="fu">::</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/qtm.html">qtm</a></span><span class="op">(</span><span class="va">sf_ut_cities</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section><section id="utah-roadways" class="level2" data-number="2.3"><h2 data-number="2.3" class="anchored" data-anchor-id="utah-roadways">
-<span class="header-section-number">2.3</span> Utah Roadways</h2>
+</section><section id="utah-roadways" class="level2" data-number="3.2"><h2 data-number="3.2" class="anchored" data-anchor-id="utah-roadways">
+<span class="header-section-number">3.2</span> Utah Roadways</h2>
+<p>The Utah Roads dataset contains all roadway centerlines statewide, including the number of through lanes for each road segment. This forms the basis for calculating road lane miles.</p>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sf_ut_roadways</span> <span class="op">=</span> <span class="fu">arcgislayers</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arcgislayers/man/arc_read.html">arc_read</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Define paths</span></span>
+<span><span class="va">path_ut_roads</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">dir_data</span>, <span class="st">"UtahRoads.gdb"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Download if not exists</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/file_access.html">file_exists</a></span><span class="op">(</span><span class="va">path_ut_roads</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># Read data using arcgis package</span></span>
+<span>  <span class="va">sf_ut_roads</span> <span class="op">&lt;-</span> <span class="fu">arcgislayers</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arcgislayers/man/arc_read.html">arc_read</a></span><span class="op">(</span></span>
 <span>    <span class="st">"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahRoads/FeatureServer/0"</span>,</span>
 <span>    crs <span class="op">=</span> <span class="va">PROJECT_CRS</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html">clean_names</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stderr">
-<pre><code>[working] (195 + 0) -&gt; 10 -&gt; 1 | ■                                  0%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (183 + 0) -&gt; 10 -&gt; 13 | ■■■                                6%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (164 + 0) -&gt; 10 -&gt; 32 | ■■■■■■                            16%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (147 + 0) -&gt; 10 -&gt; 49 | ■■■■■■■■                          24%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (136 + 0) -&gt; 10 -&gt; 60 | ■■■■■■■■■■                        29%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (126 + 0) -&gt; 10 -&gt; 70 | ■■■■■■■■■■■                       34%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (116 + 0) -&gt; 10 -&gt; 80 | ■■■■■■■■■■■■■                     39%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (111 + 0) -&gt; 10 -&gt; 85 | ■■■■■■■■■■■■■                     41%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (105 + 0) -&gt; 10 -&gt; 91 | ■■■■■■■■■■■■■■                    44%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (96 + 0) -&gt; 10 -&gt; 100 | ■■■■■■■■■■■■■■■■                  49%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (87 + 0) -&gt; 10 -&gt; 109 | ■■■■■■■■■■■■■■■■■                 53%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (83 + 0) -&gt; 10 -&gt; 113 | ■■■■■■■■■■■■■■■■■                 55%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (79 + 0) -&gt; 10 -&gt; 117 | ■■■■■■■■■■■■■■■■■■                57%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (73 + 0) -&gt; 10 -&gt; 123 | ■■■■■■■■■■■■■■■■■■■               60%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (67 + 0) -&gt; 10 -&gt; 129 | ■■■■■■■■■■■■■■■■■■■■              63%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (64 + 0) -&gt; 10 -&gt; 132 | ■■■■■■■■■■■■■■■■■■■■              64%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (59 + 0) -&gt; 10 -&gt; 137 | ■■■■■■■■■■■■■■■■■■■■■             67%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (54 + 0) -&gt; 10 -&gt; 142 | ■■■■■■■■■■■■■■■■■■■■■■            69%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (51 + 0) -&gt; 10 -&gt; 145 | ■■■■■■■■■■■■■■■■■■■■■■            70%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (46 + 0) -&gt; 10 -&gt; 150 | ■■■■■■■■■■■■■■■■■■■■■■■           73%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (40 + 0) -&gt; 10 -&gt; 156 | ■■■■■■■■■■■■■■■■■■■■■■■■          76%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (37 + 0) -&gt; 10 -&gt; 159 | ■■■■■■■■■■■■■■■■■■■■■■■■          77%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (34 + 0) -&gt; 10 -&gt; 162 | ■■■■■■■■■■■■■■■■■■■■■■■■■         79%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (28 + 0) -&gt; 10 -&gt; 168 | ■■■■■■■■■■■■■■■■■■■■■■■■■         82%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (26 + 0) -&gt; 10 -&gt; 170 | ■■■■■■■■■■■■■■■■■■■■■■■■■■        83%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (21 + 0) -&gt; 10 -&gt; 175 | ■■■■■■■■■■■■■■■■■■■■■■■■■■        85%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (17 + 0) -&gt; 10 -&gt; 179 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■       87%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (15 + 0) -&gt; 10 -&gt; 181 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■       88%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (9 + 0) -&gt; 10 -&gt; 187 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      91%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (8 + 0) -&gt; 10 -&gt; 188 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■      91%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (4 + 0) -&gt; 10 -&gt; 192 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■     93%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (0 + 0) -&gt; 7 -&gt; 199 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    97%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (0 + 0) -&gt; 3 -&gt; 203 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   99%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (0 + 0) -&gt; 0 -&gt; 206 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100%</code></pre>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html">clean_names</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="co"># Write to a GeoDatabase</span></span>
+<span>  <span class="va">sf_ut_roads</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_write.html">st_write</a></span><span class="op">(</span><span class="va">path_ut_roads</span>, layer <span class="op">=</span> <span class="st">"UtahRoads"</span>, append <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="co"># Read from local copy</span></span>
+<span>  <span class="va">sf_ut_roads</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">path_ut_roads</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">PROJECT_CRS</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `UtahRoads' from data source 
+  `D:\GitHub\GIS-Bikeway-by-City\_data\UGRC\UtahRoads.gdb' using driver `OpenFileGDB'
+Simple feature collection with 410604 features and 86 fields
+Geometry type: MULTILINESTRING
+Dimension:     XY
+Bounding box:  xmin: 895206.4 ymin: 6071653 xmax: 2356671 ymax: 7904448
+Projected CRS: NAD83 / Utah Central (ftUS)</code></pre>
 </div>
 </div>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">tmap</span><span class="fu">::</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/qtm.html">qtm</a></span><span class="op">(</span><span class="va">sf_ut_roadways</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">tmap</span><span class="fu">::</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/qtm.html">qtm</a></span><span class="op">(</span><span class="va">sf_ut_roadways</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section><section id="utah-bikeways" class="level2" data-number="2.4"><h2 data-number="2.4" class="anchored" data-anchor-id="utah-bikeways">
-<span class="header-section-number">2.4</span> Utah Bikeways</h2>
+</section><section id="utah-bikeways" class="level2" data-number="3.3"><h2 data-number="3.3" class="anchored" data-anchor-id="utah-bikeways">
+<span class="header-section-number">3.3</span> Utah Bikeways</h2>
+<p>The Bikeways dataset contains all existing bicycle facilities in Utah. Each segment has two facility type attributes (<code>facility1</code> and <code>facility2</code>) representing the bicycle facility in each direction of travel.</p>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sf_ut_bikeways</span> <span class="op">=</span> <span class="fu">arcgislayers</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arcgislayers/man/arc_read.html">arc_read</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Define paths</span></span>
+<span><span class="va">path_ut_bikeways</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">dir_data</span>, <span class="st">"Bikeways.gdb"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Download if not exists</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/file_access.html">file_exists</a></span><span class="op">(</span><span class="va">path_ut_bikeways</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># Read data using arcgis package</span></span>
+<span>  <span class="va">sf_ut_bikeways</span> <span class="op">&lt;-</span> <span class="fu">arcgislayers</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arcgislayers/man/arc_read.html">arc_read</a></span><span class="op">(</span></span>
 <span>    <span class="st">"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/Bikeways/FeatureServer/0"</span>,</span>
 <span>    crs <span class="op">=</span> <span class="va">PROJECT_CRS</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html">clean_names</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stderr">
-<pre><code>[working] (35 + 0) -&gt; 10 -&gt; 6 | ■■■■■                             12%</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>[working] (0 + 0) -&gt; 0 -&gt; 51 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100%</code></pre>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">janitor</span><span class="fu">::</span><span class="fu"><a href="https://sfirke.github.io/janitor/reference/clean_names.html">clean_names</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="co"># Write to a GeoDatabase</span></span>
+<span>  <span class="va">sf_ut_bikeways</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_write.html">st_write</a></span><span class="op">(</span><span class="va">path_ut_bikeways</span>, layer <span class="op">=</span> <span class="st">"Bikeways"</span>, append <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="co"># Read from local copy</span></span>
+<span>  <span class="va">sf_ut_bikeways</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">path_ut_bikeways</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">PROJECT_CRS</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `Bikeways' from data source 
+  `D:\GitHub\GIS-Bikeway-by-City\_data\UGRC\Bikeways.gdb' using driver `OpenFileGDB'
+Simple feature collection with 101693 features and 12 fields
+Geometry type: MULTILINESTRING
+Dimension:     XY
+Bounding box:  xmin: 896123 ymin: 6076384 xmax: 2356440 ymax: 7904448
+Projected CRS: NAD83 / Utah Central (ftUS)</code></pre>
 </div>
 </div>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">tmap</span><span class="fu">::</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/qtm.html">qtm</a></span><span class="op">(</span><span class="va">sf_ut_bikeways</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">tmap</span><span class="fu">::</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/qtm.html">qtm</a></span><span class="op">(</span><span class="va">sf_ut_bikeways</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
+</section></section><section id="road-lane-miles-by-municipality" class="level1" data-number="4"><h1 data-number="4">
+<span class="header-section-number">4</span> Road Lane Miles by Municipality</h1>
+<section id="calculate-lane-miles" class="level2" data-number="4.1"><h2 data-number="4.1" class="anchored" data-anchor-id="calculate-lane-miles">
+<span class="header-section-number">4.1</span> Calculate Lane Miles</h2>
+<p>Road lane miles are calculated by multiplying the length of each road segment by the number of through lanes. For road segments where the through lane count is missing (NA), we assume 1 lane as a conservative estimate.</p>
+<p>The calculation converts the geometry length from US survey feet to miles using the <code>units</code> package, which properly handles unit conversions and maintains unit awareness throughout the analysis.</p>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sf_ut_roads</span> <span class="op">&lt;-</span> <span class="va">sf_ut_roads</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>        <span class="co"># TODO: fix thrulanes data</span></span>
+<span>        dot_thrulanes <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">dot_thrulanes</span><span class="op">)</span>, <span class="fl">1</span>, <span class="va">dot_thrulanes</span><span class="op">)</span>,</span>
+<span>        miles <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/units.html">set_units</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html">st_length</a></span><span class="op">(</span><span class="va">`SHAPE`</span><span class="op">)</span>, <span class="st">"mile"</span><span class="op">)</span>,</span>
+<span>        lane_miles <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/units.html">set_units</a></span><span class="op">(</span><span class="va">dot_thrulanes</span> <span class="op">*</span> <span class="va">miles</span>, <span class="st">"mile"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span></span>
+<span><span class="va">sf_ut_roads</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">dot_thrulanes</span>, <span class="va">miles</span>, <span class="va">lane_miles</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 20 features and 3 fields
+Geometry type: MULTILINESTRING
+Dimension:     XY
+Bounding box:  xmin: 1525086 ymin: 6823427 xmax: 1690992 ymax: 7058250
+Projected CRS: NAD83 / Utah Central (ftUS)
+First 10 features:
+   dot_thrulanes             miles        lane_miles
+1              1 1.52909874 [mile] 1.52909874 [mile]
+2              1 2.86144968 [mile] 2.86144968 [mile]
+3              1 1.06293998 [mile] 1.06293998 [mile]
+4              1 0.80867386 [mile] 0.80867386 [mile]
+5              1 0.71336950 [mile] 0.71336950 [mile]
+6              1 0.36598669 [mile] 0.36598669 [mile]
+7              1 0.09770893 [mile] 0.09770893 [mile]
+8              1 0.25556167 [mile] 0.25556167 [mile]
+9              1 1.16984782 [mile] 1.16984782 [mile]
+10             1 0.30950636 [mile] 0.30950636 [mile]
+                            SHAPE
+1  MULTILINESTRING ((1580305 6...
+2  MULTILINESTRING ((1582439 6...
+3  MULTILINESTRING ((1585991 6...
+4  MULTILINESTRING ((1655301 7...
+5  MULTILINESTRING ((1548359 6...
+6  MULTILINESTRING ((1614298 6...
+7  MULTILINESTRING ((1606261 7...
+8  MULTILINESTRING ((1606826 6...
+9  MULTILINESTRING ((1525086 6...
+10 MULTILINESTRING ((1616278 6...</code></pre>
+</div>
+</div>
+</section><section id="aggregate-by-municipality" class="level2" data-number="4.2"><h2 data-number="4.2" class="anchored" data-anchor-id="aggregate-by-municipality">
+<span class="header-section-number">4.2</span> Aggregate by Municipality</h2>
+<p>Using spatial join, we associate each road segment with its municipality and sum the lane miles. Roads that fall outside municipal boundaries will have NA for city_name.</p>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Calculate total lane miles by municipality</span></span>
+<span><span class="va">road_miles_by_city</span> <span class="op">&lt;-</span> <span class="va">sf_ut_roads</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span></span>
+<span>      <span class="va">sf_ut_cities</span> <span class="op">|&gt;</span></span>
+<span>          <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>`city_name` <span class="op">=</span> <span class="va">`name`</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>          <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">`city_name`</span><span class="op">)</span>,</span>
+<span>      join <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="va"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">st_intersects</a></span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">city_name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span><span class="op">(</span></span>
+<span>      total_lane_miles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">lane_miles</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>      .groups <span class="op">=</span> <span class="st">"drop"</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View the results</span></span>
+<span><span class="va">road_miles_by_city</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">total_lane_miles</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 256 × 2
+   city_name        total_lane_miles
+   &lt;chr&gt;                      [mile]
+ 1 &lt;NA&gt;                       98275.
+ 2 Salt Lake City               905.
+ 3 St. George                   766.
+ 4 West Valley City             478.
+ 5 West Jordan                  475.
+ 6 Lehi                         423.
+ 7 Sandy                        417.
+ 8 South Jordan                 412.
+ 9 Layton                       383.
+10 Provo                        380.
+# ℹ 246 more rows</code></pre>
+</div>
+</div>
+<p><strong>Key Finding:</strong> Salt Lake City has the highest road lane miles among Utah municipalities, followed by St.&nbsp;George and West Valley City. The NA category represents roads outside municipal boundaries (unincorporated areas, state highways between cities, etc.).</p>
+</section></section><section id="bikeway-miles-by-municipality" class="level1" data-number="5"><h1 data-number="5">
+<span class="header-section-number">5</span> Bikeway Miles by Municipality</h1>
+<section id="calculate-bikeway-lane-miles-by-facility-type" class="level2" data-number="5.1"><h2 data-number="5.1" class="anchored" data-anchor-id="calculate-bikeway-lane-miles-by-facility-type">
+<span class="header-section-number">5.1</span> Calculate Bikeway Lane Miles by Facility Type</h2>
+<p>Bikeway facilities are directional - a single bikeway segment can have different facility types in each direction (<code>facility1</code> and <code>facility2</code>). For this analysis, we treat each direction as a separate lane, meaning a 1-mile bikeway segment with bike lanes in both directions counts as 2 lane-miles of bike lanes.</p>
+<p>The <code><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer()</a></code> function stacks <code>facility1</code> and <code>facility2</code> into separate rows, effectively doubling the mileage for segments where both directions have facilities. We then group by municipality and facility type to calculate total lane miles for each combination.</p>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Prepare bikeways with both directions as lanes</span></span>
+<span><span class="va">bikeway_miles_by_city</span> <span class="op">&lt;-</span> <span class="va">sf_ut_bikeways</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">facility1</span>, <span class="va">facility2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>      miles <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/units.html">set_units</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html">st_length</a></span><span class="op">(</span><span class="va">SHAPE</span><span class="op">)</span>, <span class="st">"mile"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span></span>
+<span>      <span class="va">sf_ut_cities</span> <span class="op">|&gt;</span></span>
+<span>          <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>`city_name` <span class="op">=</span> <span class="va">`name`</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>          <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">`city_name`</span><span class="op">)</span>,</span>
+<span>      join <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="va"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">st_intersects</a></span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span></span>
+<span>      cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">facility1</span>, <span class="va">facility2</span><span class="op">)</span>,</span>
+<span>      values_to <span class="op">=</span> <span class="st">"facility"</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">city_name</span>, <span class="va">facility</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span><span class="op">(</span></span>
+<span>      total_lane_miles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">miles</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>      .groups <span class="op">=</span> <span class="st">"drop"</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html">pivot_wider</a></span><span class="op">(</span></span>
+<span>      names_from <span class="op">=</span> <span class="va">facility</span>,</span>
+<span>      values_from <span class="op">=</span> <span class="va">total_lane_miles</span>,</span>
+<span>      values_fill <span class="op">=</span> <span class="fl">0</span></span>
+<span>    <span class="op">)</span></span>
+<span></span>
+<span><span class="va">bikeway_miles_by_city</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 256 × 12
+   city_name     `Bike lane (2B)` `Not Available` `Shoulder bikeway (3A)`
+   &lt;chr&gt;                    &lt;dbl&gt;           &lt;dbl&gt;                   &lt;dbl&gt;
+ 1 Alpine                    1.43          124.                    15.5  
+ 2 Alta                      0               8.90                   2.08 
+ 3 Altamont                  0               5.19                   0    
+ 4 Alton                     0              16.4                    5.96 
+ 5 Amalga                    0              32.9                    0    
+ 6 American Fork             9.41          308.                    19.7  
+ 7 Annabella                 0              20.3                    3.31 
+ 8 Antimony                  0             107.                     0    
+ 9 Apple Valley              0             134.                     0.714
+10 Aurora                    0              27.8                    0.698
+# ℹ 246 more rows
+# ℹ 8 more variables: `Trail or Pathway` &lt;dbl&gt;,
+#   `Signed shared roadway (3C)` &lt;dbl&gt;, `Buffered bike lane (2A)` &lt;dbl&gt;,
+#   `Cycle track, raised and curb separated (1C)` &lt;dbl&gt;,
+#   `Marked shared roadway (3B)` &lt;dbl&gt;,
+#   `Cycle track, at-grade, protected with parking (1A)` &lt;dbl&gt;,
+#   `Cycle track, protected with barrier (1B)` &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p><strong>Key Finding:</strong> Bikeway infrastructure varies significantly by facility type across municipalities. The dataset includes various facility types such as bike lanes, protected bike lanes, shared-use paths, and trails.</p>
+</section></section><section id="combine-dataframes" class="level1" data-number="6"><h1 data-number="6">
+<span class="header-section-number">6</span> Combine dataframes</h1>
+<section id="create-multimodal-summary" class="level2" data-number="6.1"><h2 data-number="6.1" class="anchored" data-anchor-id="create-multimodal-summary">
+<span class="header-section-number">6.1</span> Create Multimodal Summary</h2>
+<p>The final step combines road lane miles and bikeway lane miles by facility type into a single dataset. This allows for direct comparison of roadway and bikeway infrastructure across municipalities.</p>
+<p>Each row represents a municipality, with columns for total road lane miles followed by columns for each bikeway facility type. Cities with zero bikeway miles for a particular facility type will show 0 in that column.</p>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Combine with roads</span></span>
+<span><span class="va">combined_miles_by_city</span> <span class="op">&lt;-</span> <span class="va">road_miles_by_city</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>road_lane_miles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">total_lane_miles</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">city_name</span>, <span class="va">road_lane_miles</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">full_join</a></span><span class="op">(</span><span class="va">bikeway_miles_by_city</span>, by <span class="op">=</span> <span class="st">"city_name"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">combined_miles_by_city</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">road_lane_miles</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 256 × 13
+   city_name        road_lane_miles `Bike lane (2B)` `Not Available`
+   &lt;chr&gt;                      &lt;dbl&gt;            &lt;dbl&gt;           &lt;dbl&gt;
+ 1 &lt;NA&gt;                      98275.            10.2           53260.
+ 2 Salt Lake City              905.           234.             1042.
+ 3 St. George                  766.            13.6             875.
+ 4 West Valley City            478.            26.8             793.
+ 5 West Jordan                 475.            58.2             717.
+ 6 Lehi                        423.             9.68            668.
+ 7 Sandy                       417.            45.4             634.
+ 8 South Jordan                412.            65.0             640.
+ 9 Layton                      383.            13.5             603.
+10 Provo                       380.            86.0             529.
+# ℹ 246 more rows
+# ℹ 9 more variables: `Shoulder bikeway (3A)` &lt;dbl&gt;, `Trail or Pathway` &lt;dbl&gt;,
+#   `Signed shared roadway (3C)` &lt;dbl&gt;, `Buffered bike lane (2A)` &lt;dbl&gt;,
+#   `Cycle track, raised and curb separated (1C)` &lt;dbl&gt;,
+#   `Marked shared roadway (3B)` &lt;dbl&gt;,
+#   `Cycle track, at-grade, protected with parking (1A)` &lt;dbl&gt;,
+#   `Cycle track, protected with barrier (1B)` &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p><strong>Key Finding:</strong> The ratio of bikeway lane miles to road lane miles varies considerably across Utah municipalities, indicating different levels of investment in bicycle infrastructure relative to overall roadway networks.</p>
+</section></section><section id="export-final-results" class="level1" data-number="7"><h1 data-number="7">
+<span class="header-section-number">7</span> Export Final results</h1>
+<p>The analysis results are exported as a CSV file for further use in reports, visualizations, or other analyses. The output directory is created automatically if it doesn’t exist.</p>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># set data folder</span></span>
+<span><span class="va">dir_output</span> <span class="op">&lt;-</span> <span class="st">"_output"</span></span>
+<span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/create.html">dir_create</a></span><span class="op">(</span><span class="va">dir_output</span><span class="op">)</span> <span class="co"># Create a directory if it doesnt exist</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">combined_miles_by_city</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv</a></span><span class="op">(</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">dir_output</span>, <span class="st">"miles_by_city.csv"</span><span class="op">)</span>,</span>
+<span>        append <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Download the output files:">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Download the output files:
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="./_output/miles_by_city.csv">miles_by_city.csv</a></p>
+</div>
+</div>
+</section><section id="conclusion" class="level1" data-number="8"><h1 data-number="8">
+<span class="header-section-number">8</span> Conclusion</h1>
+<p>This analysis provides a comprehensive inventory of roadway and bikeway infrastructure across Utah municipalities. The methodology is reproducible and can be updated as new data becomes available from UGRC. The spatial join approach ensures accurate attribution of infrastructure to municipalities, though users should note that roads and bikeways in unincorporated areas will appear under the NA category.</p>
 
 
 <!-- -->
 
-</section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
     if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -1055,110 +1271,310 @@ Attaching package: 'janitor'</code></pre>
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Analyzing the bikeways Utah data</span></span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> Comparing the bikeways by type and against the highway mileage</span></span>
-<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> Lorem Ipsum</span></span>
-<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span></span>
-<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="co"> - name: Pukar Bhandari</span></span>
-<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a><span class="co">   email: pukar.bhandari@wfrc.utah.gov</span></span>
-<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a><span class="co">   affiliation:</span></span>
-<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a><span class="co">     - name: Wasatch Front Regional Council</span></span>
-<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a><span class="co">       url: "https://wfrc.utah.gov/"</span></span>
-<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "2025-11-16"</span></span>
-<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a><span class="fu"># Setup Environment</span></span>
-<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## Install Packages</span></span>
-<span id="cb59-17"><a href="#cb59-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-18"><a href="#cb59-18" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb59-19"><a href="#cb59-19" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"dplyr"</span>)</span>
-<span id="cb59-20"><a href="#cb59-20" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"sf"</span>)</span>
-<span id="cb59-21"><a href="#cb59-21" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"arcgislayers"</span>)</span>
-<span id="cb59-22"><a href="#cb59-22" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"janitor"</span>)</span>
-<span id="cb59-23"><a href="#cb59-23" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tmap"</span>)</span>
-<span id="cb59-24"><a href="#cb59-24" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb59-25"><a href="#cb59-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-26"><a href="#cb59-26" aria-hidden="true" tabindex="-1"></a><span class="fu">## Load Packages</span></span>
-<span id="cb59-27"><a href="#cb59-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-30"><a href="#cb59-30" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb59-31"><a href="#cb59-31" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb59-32"><a href="#cb59-32" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb59-33"><a href="#cb59-33" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arcgislayers)</span>
-<span id="cb59-34"><a href="#cb59-34" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span>
-<span id="cb59-35"><a href="#cb59-35" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
-<span id="cb59-36"><a href="#cb59-36" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb59-37"><a href="#cb59-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-38"><a href="#cb59-38" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment Variables</span></span>
-<span id="cb59-39"><a href="#cb59-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-42"><a href="#cb59-42" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb59-43"><a href="#cb59-43" aria-hidden="true" tabindex="-1"></a>PROJECT_CRS <span class="ot">=</span> <span class="st">"EPSG:3566"</span></span>
-<span id="cb59-44"><a href="#cb59-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-45"><a href="#cb59-45" aria-hidden="true" tabindex="-1"></a>tmap<span class="sc">::</span><span class="fu">tmap_mode</span>(<span class="st">"view"</span>)</span>
-<span id="cb59-46"><a href="#cb59-46" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb59-47"><a href="#cb59-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-48"><a href="#cb59-48" aria-hidden="true" tabindex="-1"></a><span class="fu"># Read Data from UGRC</span></span>
-<span id="cb59-49"><a href="#cb59-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-50"><a href="#cb59-50" aria-hidden="true" tabindex="-1"></a><span class="fu">## State of Utah</span></span>
-<span id="cb59-51"><a href="#cb59-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-54"><a href="#cb59-54" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb59-55"><a href="#cb59-55" aria-hidden="true" tabindex="-1"></a>sf_ut_bound <span class="ot">=</span> arcgislayers<span class="sc">::</span><span class="fu">arc_read</span>(</span>
-<span id="cb59-56"><a href="#cb59-56" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahStateBoundary/FeatureServer/0"</span>,</span>
-<span id="cb59-57"><a href="#cb59-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">crs =</span> PROJECT_CRS</span>
-<span id="cb59-58"><a href="#cb59-58" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb59-59"><a href="#cb59-59" aria-hidden="true" tabindex="-1"></a>    janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
-<span id="cb59-60"><a href="#cb59-60" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb59-61"><a href="#cb59-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-64"><a href="#cb59-64" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb59-65"><a href="#cb59-65" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb59-66"><a href="#cb59-66" aria-hidden="true" tabindex="-1"></a>tmap<span class="sc">::</span><span class="fu">qtm</span>(sf_ut_bound)</span>
-<span id="cb59-67"><a href="#cb59-67" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb59-68"><a href="#cb59-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-69"><a href="#cb59-69" aria-hidden="true" tabindex="-1"></a><span class="fu">## Utah City Boundaries</span></span>
-<span id="cb59-70"><a href="#cb59-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-73"><a href="#cb59-73" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb59-74"><a href="#cb59-74" aria-hidden="true" tabindex="-1"></a>sf_ut_cities <span class="ot">=</span> arcgislayers<span class="sc">::</span><span class="fu">arc_read</span>(</span>
-<span id="cb59-75"><a href="#cb59-75" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahMunicipalBoundaries/FeatureServer/0"</span>,</span>
-<span id="cb59-76"><a href="#cb59-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">crs =</span> PROJECT_CRS</span>
-<span id="cb59-77"><a href="#cb59-77" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb59-78"><a href="#cb59-78" aria-hidden="true" tabindex="-1"></a>    janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
-<span id="cb59-79"><a href="#cb59-79" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb59-80"><a href="#cb59-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-83"><a href="#cb59-83" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb59-84"><a href="#cb59-84" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb59-85"><a href="#cb59-85" aria-hidden="true" tabindex="-1"></a>tmap<span class="sc">::</span><span class="fu">qtm</span>(sf_ut_cities)</span>
-<span id="cb59-86"><a href="#cb59-86" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb59-87"><a href="#cb59-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-88"><a href="#cb59-88" aria-hidden="true" tabindex="-1"></a><span class="fu">## Utah Roadways</span></span>
-<span id="cb59-89"><a href="#cb59-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-92"><a href="#cb59-92" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb59-93"><a href="#cb59-93" aria-hidden="true" tabindex="-1"></a>sf_ut_roadways <span class="ot">=</span> arcgislayers<span class="sc">::</span><span class="fu">arc_read</span>(</span>
-<span id="cb59-94"><a href="#cb59-94" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahRoads/FeatureServer/0"</span>,</span>
-<span id="cb59-95"><a href="#cb59-95" aria-hidden="true" tabindex="-1"></a>    <span class="at">crs =</span> PROJECT_CRS</span>
-<span id="cb59-96"><a href="#cb59-96" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb59-97"><a href="#cb59-97" aria-hidden="true" tabindex="-1"></a>    janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
-<span id="cb59-98"><a href="#cb59-98" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb59-99"><a href="#cb59-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-102"><a href="#cb59-102" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb59-103"><a href="#cb59-103" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb59-104"><a href="#cb59-104" aria-hidden="true" tabindex="-1"></a>tmap<span class="sc">::</span><span class="fu">qtm</span>(sf_ut_roadways)</span>
-<span id="cb59-105"><a href="#cb59-105" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb59-106"><a href="#cb59-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-107"><a href="#cb59-107" aria-hidden="true" tabindex="-1"></a><span class="fu">## Utah Bikeways</span></span>
-<span id="cb59-108"><a href="#cb59-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-111"><a href="#cb59-111" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb59-112"><a href="#cb59-112" aria-hidden="true" tabindex="-1"></a>sf_ut_bikeways <span class="ot">=</span> arcgislayers<span class="sc">::</span><span class="fu">arc_read</span>(</span>
-<span id="cb59-113"><a href="#cb59-113" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/Bikeways/FeatureServer/0"</span>,</span>
-<span id="cb59-114"><a href="#cb59-114" aria-hidden="true" tabindex="-1"></a>    <span class="at">crs =</span> PROJECT_CRS</span>
-<span id="cb59-115"><a href="#cb59-115" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb59-116"><a href="#cb59-116" aria-hidden="true" tabindex="-1"></a>    janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
-<span id="cb59-117"><a href="#cb59-117" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb59-118"><a href="#cb59-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-121"><a href="#cb59-121" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb59-122"><a href="#cb59-122" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb59-123"><a href="#cb59-123" aria-hidden="true" tabindex="-1"></a>tmap<span class="sc">::</span><span class="fu">qtm</span>(sf_ut_bikeways)</span>
-<span id="cb59-124"><a href="#cb59-124" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Analyzing the Utah Bikeways data</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> Comparing the bikeways by type with the highway mileage for each city</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> This analysis calculates and compares roadway lane miles and bikeway facility miles across Utah municipalities using spatial data from the Utah Geospatial Resource Center (UGRC).</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"> - name: Pukar Bhandari</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co">   email: pukar.bhandari@wfrc.utah.gov</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="co">   affiliation:</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="co">     - name: Wasatch Front Regional Council</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="co">       url: "https://wfrc.utah.gov/"</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "2025-11-16"</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introduction</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>This analysis examines the distribution of roadway and bikeway infrastructure across Utah municipalities. The primary objectives are to:</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Calculate total road lane miles for each municipality</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Calculate bikeway lane miles by facility type for each municipality</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Compare roadway and bikeway infrastructure across municipalities</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>All spatial data is sourced from the Utah Geospatial Resource Center (UGRC) and processed using the R spatial ecosystem.</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a><span class="fu"># Setup Environment</span></span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a><span class="fu">## Install Packages</span></span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>The following packages are required for this analysis. Install them if not already available in your R environment.</span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"dplyr"</span>)</span>
+<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyr"</span>)</span>
+<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"readr"</span>)</span>
+<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"fs"</span>)</span>
+<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"sf"</span>)</span>
+<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"arcgislayers"</span>)</span>
+<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"janitor"</span>)</span>
+<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"units"</span>)</span>
+<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tmap"</span>)</span>
+<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-42"><a href="#cb36-42" aria-hidden="true" tabindex="-1"></a><span class="fu">## Load Packages</span></span>
+<span id="cb36-43"><a href="#cb36-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-46"><a href="#cb36-46" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-47"><a href="#cb36-47" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) <span class="co"># for data manipulation</span></span>
+<span id="cb36-48"><a href="#cb36-48" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr) <span class="co"># for tidy data operations (pivot functions)</span></span>
+<span id="cb36-49"><a href="#cb36-49" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr) <span class="co"># read and write tabular data</span></span>
+<span id="cb36-50"><a href="#cb36-50" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fs) <span class="co"># for file system management</span></span>
+<span id="cb36-51"><a href="#cb36-51" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf) <span class="co"># for simple feature geometries</span></span>
+<span id="cb36-52"><a href="#cb36-52" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arcgislayers) <span class="co"># to read arcgis rest services</span></span>
+<span id="cb36-53"><a href="#cb36-53" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor) <span class="co"># clean column names</span></span>
+<span id="cb36-54"><a href="#cb36-54" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(units) <span class="co"># set and adjust units of measurement</span></span>
+<span id="cb36-55"><a href="#cb36-55" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap) <span class="co"># view sf objects</span></span>
+<span id="cb36-56"><a href="#cb36-56" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-57"><a href="#cb36-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-58"><a href="#cb36-58" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment Variables</span></span>
+<span id="cb36-59"><a href="#cb36-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-60"><a href="#cb36-60" aria-hidden="true" tabindex="-1"></a>We use EPSG:3566 (NAD83(HARN) / Utah North) projection, which uses US survey feet as the base unit. This projection is appropriate for statewide analysis in Utah and ensures accurate distance calculations.</span>
+<span id="cb36-61"><a href="#cb36-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-64"><a href="#cb36-64" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-65"><a href="#cb36-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Set Project CRS</span></span>
+<span id="cb36-66"><a href="#cb36-66" aria-hidden="true" tabindex="-1"></a>PROJECT_CRS <span class="ot">=</span> <span class="st">"EPSG:3566"</span></span>
+<span id="cb36-67"><a href="#cb36-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-68"><a href="#cb36-68" aria-hidden="true" tabindex="-1"></a><span class="co"># Set tmap mode to interactive</span></span>
+<span id="cb36-69"><a href="#cb36-69" aria-hidden="true" tabindex="-1"></a>tmap<span class="sc">::</span><span class="fu">tmap_mode</span>(<span class="st">"view"</span>)</span>
+<span id="cb36-70"><a href="#cb36-70" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-71"><a href="#cb36-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-72"><a href="#cb36-72" aria-hidden="true" tabindex="-1"></a><span class="fu"># Read Data from UGRC</span></span>
+<span id="cb36-73"><a href="#cb36-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-74"><a href="#cb36-74" aria-hidden="true" tabindex="-1"></a>All spatial datasets are downloaded from UGRC's ArcGIS REST services. To improve performance and enable offline work, the data is cached locally as GeoDatabase files. The code checks if local copies exist before downloading.</span>
+<span id="cb36-75"><a href="#cb36-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-78"><a href="#cb36-78" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-79"><a href="#cb36-79" aria-hidden="true" tabindex="-1"></a><span class="co"># set data folder</span></span>
+<span id="cb36-80"><a href="#cb36-80" aria-hidden="true" tabindex="-1"></a>dir_data <span class="ot">&lt;-</span> <span class="st">"_data/UGRC"</span></span>
+<span id="cb36-81"><a href="#cb36-81" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(dir_data) <span class="co"># Create a directory if it doesnt exist</span></span>
+<span id="cb36-82"><a href="#cb36-82" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-83"><a href="#cb36-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-84"><a href="#cb36-84" aria-hidden="true" tabindex="-1"></a><span class="fu">## Utah City Boundaries</span></span>
+<span id="cb36-85"><a href="#cb36-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-86"><a href="#cb36-86" aria-hidden="true" tabindex="-1"></a>Municipal boundaries are used to aggregate roadway and bikeway data by city. These boundaries represent the legal limits of incorporated municipalities in Utah.</span>
+<span id="cb36-87"><a href="#cb36-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-90"><a href="#cb36-90" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-91"><a href="#cb36-91" aria-hidden="true" tabindex="-1"></a><span class="co"># Define paths</span></span>
+<span id="cb36-92"><a href="#cb36-92" aria-hidden="true" tabindex="-1"></a>path_ut_cities <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir_data, <span class="st">"UtahMunicipalBoundaries.gdb"</span>)</span>
+<span id="cb36-93"><a href="#cb36-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-94"><a href="#cb36-94" aria-hidden="true" tabindex="-1"></a><span class="co"># Download if not exists</span></span>
+<span id="cb36-95"><a href="#cb36-95" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span>fs<span class="sc">::</span><span class="fu">file_exists</span>(path_ut_cities)) {</span>
+<span id="cb36-96"><a href="#cb36-96" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Read data using arcgis package</span></span>
+<span id="cb36-97"><a href="#cb36-97" aria-hidden="true" tabindex="-1"></a>  sf_ut_cities <span class="ot">&lt;-</span> arcgislayers<span class="sc">::</span><span class="fu">arc_read</span>(</span>
+<span id="cb36-98"><a href="#cb36-98" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahMunicipalBoundaries/FeatureServer/0"</span>,</span>
+<span id="cb36-99"><a href="#cb36-99" aria-hidden="true" tabindex="-1"></a>    <span class="at">crs =</span> PROJECT_CRS</span>
+<span id="cb36-100"><a href="#cb36-100" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
+<span id="cb36-101"><a href="#cb36-101" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Write to a GeoDatabase</span></span>
+<span id="cb36-102"><a href="#cb36-102" aria-hidden="true" tabindex="-1"></a>  sf_ut_cities <span class="sc">|&gt;</span></span>
+<span id="cb36-103"><a href="#cb36-103" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_write</span>(path_ut_cities, <span class="at">layer =</span> <span class="st">"UtahMunicipalBoundaries"</span>, <span class="at">append =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb36-104"><a href="#cb36-104" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb36-105"><a href="#cb36-105" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Read from local copy</span></span>
+<span id="cb36-106"><a href="#cb36-106" aria-hidden="true" tabindex="-1"></a>  sf_ut_cities <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_read</span>(path_ut_cities) <span class="sc">|&gt;</span></span>
+<span id="cb36-107"><a href="#cb36-107" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_transform</span>(PROJECT_CRS)</span>
+<span id="cb36-108"><a href="#cb36-108" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-109"><a href="#cb36-109" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-110"><a href="#cb36-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-113"><a href="#cb36-113" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-114"><a href="#cb36-114" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb36-115"><a href="#cb36-115" aria-hidden="true" tabindex="-1"></a>tmap<span class="sc">::</span><span class="fu">qtm</span>(sf_ut_cities)</span>
+<span id="cb36-116"><a href="#cb36-116" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-117"><a href="#cb36-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-118"><a href="#cb36-118" aria-hidden="true" tabindex="-1"></a><span class="fu">## Utah Roadways</span></span>
+<span id="cb36-119"><a href="#cb36-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-120"><a href="#cb36-120" aria-hidden="true" tabindex="-1"></a>The Utah Roads dataset contains all roadway centerlines statewide, including the number of through lanes for each road segment. This forms the basis for calculating road lane miles.</span>
+<span id="cb36-121"><a href="#cb36-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-124"><a href="#cb36-124" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-125"><a href="#cb36-125" aria-hidden="true" tabindex="-1"></a><span class="co"># Define paths</span></span>
+<span id="cb36-126"><a href="#cb36-126" aria-hidden="true" tabindex="-1"></a>path_ut_roads <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir_data, <span class="st">"UtahRoads.gdb"</span>)</span>
+<span id="cb36-127"><a href="#cb36-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-128"><a href="#cb36-128" aria-hidden="true" tabindex="-1"></a><span class="co"># Download if not exists</span></span>
+<span id="cb36-129"><a href="#cb36-129" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span>fs<span class="sc">::</span><span class="fu">file_exists</span>(path_ut_roads)) {</span>
+<span id="cb36-130"><a href="#cb36-130" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Read data using arcgis package</span></span>
+<span id="cb36-131"><a href="#cb36-131" aria-hidden="true" tabindex="-1"></a>  sf_ut_roads <span class="ot">&lt;-</span> arcgislayers<span class="sc">::</span><span class="fu">arc_read</span>(</span>
+<span id="cb36-132"><a href="#cb36-132" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahRoads/FeatureServer/0"</span>,</span>
+<span id="cb36-133"><a href="#cb36-133" aria-hidden="true" tabindex="-1"></a>    <span class="at">crs =</span> PROJECT_CRS</span>
+<span id="cb36-134"><a href="#cb36-134" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
+<span id="cb36-135"><a href="#cb36-135" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Write to a GeoDatabase</span></span>
+<span id="cb36-136"><a href="#cb36-136" aria-hidden="true" tabindex="-1"></a>  sf_ut_roads <span class="sc">|&gt;</span></span>
+<span id="cb36-137"><a href="#cb36-137" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_write</span>(path_ut_roads, <span class="at">layer =</span> <span class="st">"UtahRoads"</span>, <span class="at">append =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb36-138"><a href="#cb36-138" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb36-139"><a href="#cb36-139" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Read from local copy</span></span>
+<span id="cb36-140"><a href="#cb36-140" aria-hidden="true" tabindex="-1"></a>  sf_ut_roads <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_read</span>(path_ut_roads) <span class="sc">|&gt;</span></span>
+<span id="cb36-141"><a href="#cb36-141" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_transform</span>(PROJECT_CRS)</span>
+<span id="cb36-142"><a href="#cb36-142" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-143"><a href="#cb36-143" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-144"><a href="#cb36-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-147"><a href="#cb36-147" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-148"><a href="#cb36-148" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb36-149"><a href="#cb36-149" aria-hidden="true" tabindex="-1"></a>tmap<span class="sc">::</span><span class="fu">qtm</span>(sf_ut_roadways)</span>
+<span id="cb36-150"><a href="#cb36-150" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-151"><a href="#cb36-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-152"><a href="#cb36-152" aria-hidden="true" tabindex="-1"></a><span class="fu">## Utah Bikeways</span></span>
+<span id="cb36-153"><a href="#cb36-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-154"><a href="#cb36-154" aria-hidden="true" tabindex="-1"></a>The Bikeways dataset contains all existing bicycle facilities in Utah. Each segment has two facility type attributes (<span class="in">`facility1`</span> and <span class="in">`facility2`</span>) representing the bicycle facility in each direction of travel.</span>
+<span id="cb36-155"><a href="#cb36-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-158"><a href="#cb36-158" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-159"><a href="#cb36-159" aria-hidden="true" tabindex="-1"></a><span class="co"># Define paths</span></span>
+<span id="cb36-160"><a href="#cb36-160" aria-hidden="true" tabindex="-1"></a>path_ut_bikeways <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir_data, <span class="st">"Bikeways.gdb"</span>)</span>
+<span id="cb36-161"><a href="#cb36-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-162"><a href="#cb36-162" aria-hidden="true" tabindex="-1"></a><span class="co"># Download if not exists</span></span>
+<span id="cb36-163"><a href="#cb36-163" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span>fs<span class="sc">::</span><span class="fu">file_exists</span>(path_ut_bikeways)) {</span>
+<span id="cb36-164"><a href="#cb36-164" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Read data using arcgis package</span></span>
+<span id="cb36-165"><a href="#cb36-165" aria-hidden="true" tabindex="-1"></a>  sf_ut_bikeways <span class="ot">&lt;-</span> arcgislayers<span class="sc">::</span><span class="fu">arc_read</span>(</span>
+<span id="cb36-166"><a href="#cb36-166" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/Bikeways/FeatureServer/0"</span>,</span>
+<span id="cb36-167"><a href="#cb36-167" aria-hidden="true" tabindex="-1"></a>    <span class="at">crs =</span> PROJECT_CRS</span>
+<span id="cb36-168"><a href="#cb36-168" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
+<span id="cb36-169"><a href="#cb36-169" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Write to a GeoDatabase</span></span>
+<span id="cb36-170"><a href="#cb36-170" aria-hidden="true" tabindex="-1"></a>  sf_ut_bikeways <span class="sc">|&gt;</span></span>
+<span id="cb36-171"><a href="#cb36-171" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_write</span>(path_ut_bikeways, <span class="at">layer =</span> <span class="st">"Bikeways"</span>, <span class="at">append =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb36-172"><a href="#cb36-172" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb36-173"><a href="#cb36-173" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Read from local copy</span></span>
+<span id="cb36-174"><a href="#cb36-174" aria-hidden="true" tabindex="-1"></a>  sf_ut_bikeways <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_read</span>(path_ut_bikeways) <span class="sc">|&gt;</span></span>
+<span id="cb36-175"><a href="#cb36-175" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_transform</span>(PROJECT_CRS)</span>
+<span id="cb36-176"><a href="#cb36-176" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-177"><a href="#cb36-177" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-178"><a href="#cb36-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-181"><a href="#cb36-181" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-182"><a href="#cb36-182" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb36-183"><a href="#cb36-183" aria-hidden="true" tabindex="-1"></a>tmap<span class="sc">::</span><span class="fu">qtm</span>(sf_ut_bikeways)</span>
+<span id="cb36-184"><a href="#cb36-184" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-185"><a href="#cb36-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-186"><a href="#cb36-186" aria-hidden="true" tabindex="-1"></a><span class="fu"># Road Lane Miles by Municipality</span></span>
+<span id="cb36-187"><a href="#cb36-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-188"><a href="#cb36-188" aria-hidden="true" tabindex="-1"></a><span class="fu">## Calculate Lane Miles</span></span>
+<span id="cb36-189"><a href="#cb36-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-190"><a href="#cb36-190" aria-hidden="true" tabindex="-1"></a>Road lane miles are calculated by multiplying the length of each road segment by the number of through lanes. For road segments where the through lane count is missing (NA), we assume 1 lane as a conservative estimate.</span>
+<span id="cb36-191"><a href="#cb36-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-192"><a href="#cb36-192" aria-hidden="true" tabindex="-1"></a>The calculation converts the geometry length from US survey feet to miles using the <span class="in">`units`</span> package, which properly handles unit conversions and maintains unit awareness throughout the analysis.</span>
+<span id="cb36-193"><a href="#cb36-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-196"><a href="#cb36-196" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-197"><a href="#cb36-197" aria-hidden="true" tabindex="-1"></a>sf_ut_roads <span class="ot">&lt;-</span> sf_ut_roads <span class="sc">|&gt;</span></span>
+<span id="cb36-198"><a href="#cb36-198" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb36-199"><a href="#cb36-199" aria-hidden="true" tabindex="-1"></a>        <span class="co"># </span><span class="al">TODO</span><span class="co">: fix thrulanes data</span></span>
+<span id="cb36-200"><a href="#cb36-200" aria-hidden="true" tabindex="-1"></a>        <span class="at">dot_thrulanes =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(dot_thrulanes), <span class="dv">1</span>, dot_thrulanes),</span>
+<span id="cb36-201"><a href="#cb36-201" aria-hidden="true" tabindex="-1"></a>        <span class="at">miles =</span> units<span class="sc">::</span><span class="fu">set_units</span>(sf<span class="sc">::</span><span class="fu">st_length</span>(<span class="st">`</span><span class="at">SHAPE</span><span class="st">`</span>), <span class="st">"mile"</span>),</span>
+<span id="cb36-202"><a href="#cb36-202" aria-hidden="true" tabindex="-1"></a>        <span class="at">lane_miles =</span> units<span class="sc">::</span><span class="fu">set_units</span>(dot_thrulanes <span class="sc">*</span> miles, <span class="st">"mile"</span>)</span>
+<span id="cb36-203"><a href="#cb36-203" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb36-204"><a href="#cb36-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-205"><a href="#cb36-205" aria-hidden="true" tabindex="-1"></a>sf_ut_roads <span class="sc">|&gt;</span></span>
+<span id="cb36-206"><a href="#cb36-206" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(dot_thrulanes, miles, lane_miles) <span class="sc">|&gt;</span></span>
+<span id="cb36-207"><a href="#cb36-207" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">20</span>)</span>
+<span id="cb36-208"><a href="#cb36-208" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-209"><a href="#cb36-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-210"><a href="#cb36-210" aria-hidden="true" tabindex="-1"></a><span class="fu">## Aggregate by Municipality</span></span>
+<span id="cb36-211"><a href="#cb36-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-212"><a href="#cb36-212" aria-hidden="true" tabindex="-1"></a>Using spatial join, we associate each road segment with its municipality and sum the lane miles. Roads that fall outside municipal boundaries will have NA for city_name.</span>
+<span id="cb36-213"><a href="#cb36-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-216"><a href="#cb36-216" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-217"><a href="#cb36-217" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate total lane miles by municipality</span></span>
+<span id="cb36-218"><a href="#cb36-218" aria-hidden="true" tabindex="-1"></a>road_miles_by_city <span class="ot">&lt;-</span> sf_ut_roads <span class="sc">|&gt;</span></span>
+<span id="cb36-219"><a href="#cb36-219" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_join</span>(</span>
+<span id="cb36-220"><a href="#cb36-220" aria-hidden="true" tabindex="-1"></a>      sf_ut_cities <span class="sc">|&gt;</span></span>
+<span id="cb36-221"><a href="#cb36-221" aria-hidden="true" tabindex="-1"></a>          dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">`</span><span class="at">city_name</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">name</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
+<span id="cb36-222"><a href="#cb36-222" aria-hidden="true" tabindex="-1"></a>          dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">city_name</span><span class="st">`</span>),</span>
+<span id="cb36-223"><a href="#cb36-223" aria-hidden="true" tabindex="-1"></a>      <span class="at">join =</span> sf<span class="sc">::</span>st_intersects</span>
+<span id="cb36-224"><a href="#cb36-224" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb36-225"><a href="#cb36-225" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">group_by</span>(city_name) <span class="sc">|&gt;</span></span>
+<span id="cb36-226"><a href="#cb36-226" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">summarize</span>(</span>
+<span id="cb36-227"><a href="#cb36-227" aria-hidden="true" tabindex="-1"></a>      <span class="at">total_lane_miles =</span> <span class="fu">sum</span>(lane_miles, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb36-228"><a href="#cb36-228" aria-hidden="true" tabindex="-1"></a>      <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb36-229"><a href="#cb36-229" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb36-230"><a href="#cb36-230" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_drop_geometry</span>()</span>
+<span id="cb36-231"><a href="#cb36-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-232"><a href="#cb36-232" aria-hidden="true" tabindex="-1"></a><span class="co"># View the results</span></span>
+<span id="cb36-233"><a href="#cb36-233" aria-hidden="true" tabindex="-1"></a>road_miles_by_city <span class="sc">|&gt;</span></span>
+<span id="cb36-234"><a href="#cb36-234" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(dplyr<span class="sc">::</span><span class="fu">desc</span>(total_lane_miles))</span>
+<span id="cb36-235"><a href="#cb36-235" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-236"><a href="#cb36-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-237"><a href="#cb36-237" aria-hidden="true" tabindex="-1"></a>**Key Finding:** Salt Lake City has the highest road lane miles among Utah municipalities, followed by St. George and West Valley City. The NA category represents roads outside municipal boundaries (unincorporated areas, state highways between cities, etc.).</span>
+<span id="cb36-238"><a href="#cb36-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-239"><a href="#cb36-239" aria-hidden="true" tabindex="-1"></a><span class="fu"># Bikeway Miles by Municipality</span></span>
+<span id="cb36-240"><a href="#cb36-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-241"><a href="#cb36-241" aria-hidden="true" tabindex="-1"></a><span class="fu">## Calculate Bikeway Lane Miles by Facility Type</span></span>
+<span id="cb36-242"><a href="#cb36-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-243"><a href="#cb36-243" aria-hidden="true" tabindex="-1"></a>Bikeway facilities are directional - a single bikeway segment can have different facility types in each direction (<span class="in">`facility1`</span> and <span class="in">`facility2`</span>). For this analysis, we treat each direction as a separate lane, meaning a 1-mile bikeway segment with bike lanes in both directions counts as 2 lane-miles of bike lanes.</span>
+<span id="cb36-244"><a href="#cb36-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-245"><a href="#cb36-245" aria-hidden="true" tabindex="-1"></a>The <span class="in">`pivot_longer()`</span> function stacks <span class="in">`facility1`</span> and <span class="in">`facility2`</span> into separate rows, effectively doubling the mileage for segments where both directions have facilities. We then group by municipality and facility type to calculate total lane miles for each combination.</span>
+<span id="cb36-246"><a href="#cb36-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-249"><a href="#cb36-249" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-250"><a href="#cb36-250" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare bikeways with both directions as lanes</span></span>
+<span id="cb36-251"><a href="#cb36-251" aria-hidden="true" tabindex="-1"></a>bikeway_miles_by_city <span class="ot">&lt;-</span> sf_ut_bikeways <span class="sc">|&gt;</span></span>
+<span id="cb36-252"><a href="#cb36-252" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(facility1, facility2) <span class="sc">|&gt;</span></span>
+<span id="cb36-253"><a href="#cb36-253" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb36-254"><a href="#cb36-254" aria-hidden="true" tabindex="-1"></a>      <span class="at">miles =</span> units<span class="sc">::</span><span class="fu">set_units</span>(sf<span class="sc">::</span><span class="fu">st_length</span>(SHAPE), <span class="st">"mile"</span>)</span>
+<span id="cb36-255"><a href="#cb36-255" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb36-256"><a href="#cb36-256" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_join</span>(</span>
+<span id="cb36-257"><a href="#cb36-257" aria-hidden="true" tabindex="-1"></a>      sf_ut_cities <span class="sc">|&gt;</span></span>
+<span id="cb36-258"><a href="#cb36-258" aria-hidden="true" tabindex="-1"></a>          dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">`</span><span class="at">city_name</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">name</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
+<span id="cb36-259"><a href="#cb36-259" aria-hidden="true" tabindex="-1"></a>          dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">city_name</span><span class="st">`</span>),</span>
+<span id="cb36-260"><a href="#cb36-260" aria-hidden="true" tabindex="-1"></a>      <span class="at">join =</span> sf<span class="sc">::</span>st_intersects</span>
+<span id="cb36-261"><a href="#cb36-261" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb36-262"><a href="#cb36-262" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
+<span id="cb36-263"><a href="#cb36-263" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb36-264"><a href="#cb36-264" aria-hidden="true" tabindex="-1"></a>      <span class="at">cols =</span> <span class="fu">c</span>(facility1, facility2),</span>
+<span id="cb36-265"><a href="#cb36-265" aria-hidden="true" tabindex="-1"></a>      <span class="at">values_to =</span> <span class="st">"facility"</span></span>
+<span id="cb36-266"><a href="#cb36-266" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb36-267"><a href="#cb36-267" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">group_by</span>(city_name, facility) <span class="sc">|&gt;</span></span>
+<span id="cb36-268"><a href="#cb36-268" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">summarize</span>(</span>
+<span id="cb36-269"><a href="#cb36-269" aria-hidden="true" tabindex="-1"></a>      <span class="at">total_lane_miles =</span> <span class="fu">sum</span>(<span class="fu">as.numeric</span>(miles), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb36-270"><a href="#cb36-270" aria-hidden="true" tabindex="-1"></a>      <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb36-271"><a href="#cb36-271" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb36-272"><a href="#cb36-272" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(</span>
+<span id="cb36-273"><a href="#cb36-273" aria-hidden="true" tabindex="-1"></a>      <span class="at">names_from =</span> facility,</span>
+<span id="cb36-274"><a href="#cb36-274" aria-hidden="true" tabindex="-1"></a>      <span class="at">values_from =</span> total_lane_miles,</span>
+<span id="cb36-275"><a href="#cb36-275" aria-hidden="true" tabindex="-1"></a>      <span class="at">values_fill =</span> <span class="dv">0</span></span>
+<span id="cb36-276"><a href="#cb36-276" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb36-277"><a href="#cb36-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-278"><a href="#cb36-278" aria-hidden="true" tabindex="-1"></a>bikeway_miles_by_city</span>
+<span id="cb36-279"><a href="#cb36-279" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-280"><a href="#cb36-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-281"><a href="#cb36-281" aria-hidden="true" tabindex="-1"></a>**Key Finding:** Bikeway infrastructure varies significantly by facility type across municipalities. The dataset includes various facility types such as bike lanes, protected bike lanes, shared-use paths, and trails.</span>
+<span id="cb36-282"><a href="#cb36-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-283"><a href="#cb36-283" aria-hidden="true" tabindex="-1"></a><span class="fu"># Combine dataframes</span></span>
+<span id="cb36-284"><a href="#cb36-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-285"><a href="#cb36-285" aria-hidden="true" tabindex="-1"></a><span class="fu">## Create Multimodal Summary</span></span>
+<span id="cb36-286"><a href="#cb36-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-287"><a href="#cb36-287" aria-hidden="true" tabindex="-1"></a>The final step combines road lane miles and bikeway lane miles by facility type into a single dataset. This allows for direct comparison of roadway and bikeway infrastructure across municipalities.</span>
+<span id="cb36-288"><a href="#cb36-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-289"><a href="#cb36-289" aria-hidden="true" tabindex="-1"></a>Each row represents a municipality, with columns for total road lane miles followed by columns for each bikeway facility type. Cities with zero bikeway miles for a particular facility type will show 0 in that column.</span>
+<span id="cb36-290"><a href="#cb36-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-293"><a href="#cb36-293" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-294"><a href="#cb36-294" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine with roads</span></span>
+<span id="cb36-295"><a href="#cb36-295" aria-hidden="true" tabindex="-1"></a>combined_miles_by_city <span class="ot">&lt;-</span> road_miles_by_city <span class="sc">|&gt;</span></span>
+<span id="cb36-296"><a href="#cb36-296" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">road_lane_miles =</span> <span class="fu">as.numeric</span>(total_lane_miles)) <span class="sc">|&gt;</span></span>
+<span id="cb36-297"><a href="#cb36-297" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(city_name, road_lane_miles) <span class="sc">|&gt;</span></span>
+<span id="cb36-298"><a href="#cb36-298" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">full_join</span>(bikeway_miles_by_city, <span class="at">by =</span> <span class="st">"city_name"</span>)</span>
+<span id="cb36-299"><a href="#cb36-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-300"><a href="#cb36-300" aria-hidden="true" tabindex="-1"></a>combined_miles_by_city <span class="sc">|&gt;</span></span>
+<span id="cb36-301"><a href="#cb36-301" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(dplyr<span class="sc">::</span><span class="fu">desc</span>(road_lane_miles))</span>
+<span id="cb36-302"><a href="#cb36-302" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-303"><a href="#cb36-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-304"><a href="#cb36-304" aria-hidden="true" tabindex="-1"></a>**Key Finding:** The ratio of bikeway lane miles to road lane miles varies considerably across Utah municipalities, indicating different levels of investment in bicycle infrastructure relative to overall roadway networks.</span>
+<span id="cb36-305"><a href="#cb36-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-306"><a href="#cb36-306" aria-hidden="true" tabindex="-1"></a><span class="fu"># Export Final results</span></span>
+<span id="cb36-307"><a href="#cb36-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-308"><a href="#cb36-308" aria-hidden="true" tabindex="-1"></a>The analysis results are exported as a CSV file for further use in reports, visualizations, or other analyses. The output directory is created automatically if it doesn't exist.</span>
+<span id="cb36-309"><a href="#cb36-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-312"><a href="#cb36-312" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-313"><a href="#cb36-313" aria-hidden="true" tabindex="-1"></a><span class="co"># set data folder</span></span>
+<span id="cb36-314"><a href="#cb36-314" aria-hidden="true" tabindex="-1"></a>dir_output <span class="ot">&lt;-</span> <span class="st">"_output"</span></span>
+<span id="cb36-315"><a href="#cb36-315" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(dir_output) <span class="co"># Create a directory if it doesnt exist</span></span>
+<span id="cb36-316"><a href="#cb36-316" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-317"><a href="#cb36-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-320"><a href="#cb36-320" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb36-321"><a href="#cb36-321" aria-hidden="true" tabindex="-1"></a>combined_miles_by_city <span class="sc">|&gt;</span></span>
+<span id="cb36-322"><a href="#cb36-322" aria-hidden="true" tabindex="-1"></a>    readr<span class="sc">::</span><span class="fu">write_csv</span>(</span>
+<span id="cb36-323"><a href="#cb36-323" aria-hidden="true" tabindex="-1"></a>        <span class="fu">file.path</span>(dir_output, <span class="st">"miles_by_city.csv"</span>),</span>
+<span id="cb36-324"><a href="#cb36-324" aria-hidden="true" tabindex="-1"></a>        <span class="at">append =</span> <span class="cn">FALSE</span></span>
+<span id="cb36-325"><a href="#cb36-325" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb36-326"><a href="#cb36-326" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb36-327"><a href="#cb36-327" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-328"><a href="#cb36-328" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Download the output files:"}</span>
+<span id="cb36-329"><a href="#cb36-329" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">miles_by_city.csv</span><span class="co">](./_output/miles_by_city.csv)</span></span>
+<span id="cb36-330"><a href="#cb36-330" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb36-331"><a href="#cb36-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-332"><a href="#cb36-332" aria-hidden="true" tabindex="-1"></a><span class="fu"># Conclusion</span></span>
+<span id="cb36-333"><a href="#cb36-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-334"><a href="#cb36-334" aria-hidden="true" tabindex="-1"></a>This analysis provides a comprehensive inventory of roadway and bikeway infrastructure across Utah municipalities. The methodology is reproducible and can be updated as new data becomes available from UGRC. The spatial join approach ensures accurate attribution of infrastructure to municipalities, though users should note that roads and bikeways in unincorporated areas will appear under the NA category.</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
