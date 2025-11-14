@@ -31,6 +31,7 @@ The following packages are required for this analysis. Install them if not alrea
 install.packages("dplyr")
 install.packages("tidyr")
 install.packages("readr")
+install.packages("forcats")
 install.packages("fs")
 install.packages("sf")
 install.packages("arcgislayers")
@@ -45,6 +46,7 @@ install.packages("tmap")
 library(dplyr) # for data manipulation
 library(tidyr) # for tidy data operations (pivot functions)
 library(readr) # read and write tabular data
+library(forcats) # process categorical data
 library(fs) # for file system management
 library(sf) # for simple feature geometries
 library(arcgislayers) # to read arcgis rest services
@@ -194,17 +196,23 @@ Using spatial join, we associate each road segment with its municipality and sum
 ```{r}
 # Calculate total lane miles by municipality
 road_miles_by_city <- sf_ut_roads |>
+
+    # Spatial join: attach each road segment to the city it falls within
     sf::st_join(
       sf_ut_cities |>
-          dplyr::rename(`city_name` = `name`) |>
-          dplyr::select(`city_name`),
+        dplyr::rename(`city_name` = `name`) |>
+        dplyr::select(`city_name`),
       join = sf::st_intersects
     ) |>
+
+    # Group and summarize: total lane miles per city
     dplyr::group_by(city_name) |>
     dplyr::summarize(
       total_lane_miles = sum(lane_miles, na.rm = TRUE),
       .groups = "drop"
     ) |>
+
+    # Output as a non-spatial table
     sf::st_drop_geometry()
 
 # View the results
@@ -216,6 +224,32 @@ road_miles_by_city |>
 
 # Bikeway Miles by Municipality
 
+## Process Bikeway Types to Categories
+
+We use `forcats` package to respect the hierarchy of the bicycle facilities.
+
+```{r}
+facility_levels <- c(
+  "Cycle track, at-grade, protected with parking (1A)",
+  "Cycle track, protected with barrier (1B)",
+  "Buffered bike lane (2A)",
+  "Bike lane (2B)",
+  "Cycle track, raised and curb separated (1C)",
+  "Marked shared roadway (3B)",
+  "Signed shared roadway (3C)",
+  "Shoulder bikeway (3A)",
+  "Other bike route, unspecified (3)",
+  "Trail or Pathway",
+  "Not Available"
+)
+
+sf_ut_bikeways <- sf_ut_bikeways |>
+  dplyr::mutate(
+    facility1 = forcats::fct_relevel(facility1, facility_levels),
+    facility2 = forcats::fct_relevel(facility2, facility_levels)
+  )
+```
+
 ## Calculate Bikeway Lane Miles by Facility Type
 
 Bikeway facilities are directional - a single bikeway segment can have different facility types in each direction (`facility1` and `facility2`). For this analysis, we treat each direction as a separate lane, meaning a 1-mile bikeway segment with bike lanes in both directions counts as 2 lane-miles of bike lanes.
@@ -226,9 +260,13 @@ The `pivot_longer()` function stacks `facility1` and `facility2` into separate r
 # Prepare bikeways with both directions as lanes
 bikeway_miles_by_city <- sf_ut_bikeways |>
     dplyr::select(facility1, facility2) |>
+
+    # Add mileage to each bikeway segment
     dplyr::mutate(
       miles = units::set_units(sf::st_length(SHAPE), "mile")
     ) |>
+
+    # Spatial join: attach each segment to the city it falls within
     sf::st_join(
       sf_ut_cities |>
           dplyr::rename(`city_name` = `name`) |>
@@ -236,22 +274,38 @@ bikeway_miles_by_city <- sf_ut_bikeways |>
       join = sf::st_intersects
     ) |>
     sf::st_drop_geometry() |>
+
+    # Treat facility1 and facility2 as separate lane directions
     tidyr::pivot_longer(
       cols = c(facility1, facility2),
       values_to = "facility"
     ) |>
+
+    # Summarize total lane miles by city and facility type
     dplyr::group_by(city_name, facility) |>
     dplyr::summarize(
       total_lane_miles = sum(as.numeric(miles), na.rm = TRUE),
       .groups = "drop"
     ) |>
+
+    # Make facility types into columns
     tidyr::pivot_wider(
       names_from = facility,
       values_from = total_lane_miles,
       values_fill = 0
     )
 
-bikeway_miles_by_city
+# Add total across all bike lane types
+bikeway_miles_by_city <- bikeway_miles_by_city |>
+    dplyr::rowwise() |>
+    dplyr::mutate(
+      total_bike_lane_miles = sum(dplyr::c_across(!city_name))
+    ) |>
+    dplyr::ungroup()
+
+# View the results
+bikeway_miles_by_city |>
+  dplyr::arrange(dplyr::desc(total_bike_lane_miles))
 ```
 
 **Key Finding:** Bikeway infrastructure varies significantly by facility type across municipalities. The dataset includes various facility types such as bike lanes, protected bike lanes, shared-use paths, and trails.
@@ -267,9 +321,18 @@ Each row represents a municipality, with columns for total road lane miles follo
 ```{r}
 # Combine with roads
 combined_miles_by_city <- road_miles_by_city |>
+  # Convert road lane miles to numeric
   dplyr::mutate(road_lane_miles = as.numeric(total_lane_miles)) |>
   dplyr::select(city_name, road_lane_miles) |>
-  dplyr::full_join(bikeway_miles_by_city, by = "city_name")
+  # Join with bikeway data
+  dplyr::right_join(bikeway_miles_by_city, by = "city_name") |>
+  # Reorder columns: city_name, bike categories, total bike, then road
+  dplyr::select(
+    city_name,
+    dplyr::all_of(facility_levels),   # bike lane categories
+    total_bike_lane_miles,
+    road_lane_miles
+  )
 
 combined_miles_by_city |>
   dplyr::arrange(dplyr::desc(road_lane_miles))
