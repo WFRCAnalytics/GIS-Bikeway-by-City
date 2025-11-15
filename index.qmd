@@ -291,23 +291,37 @@ Bikeway facilities are directional - a single bikeway segment can have different
 The `pivot_longer()` function stacks `facility1` and `facility2` into separate rows, effectively doubling the mileage for segments where both directions have facilities. We then group by municipality and facility type to calculate total lane miles for each combination.
 
 ```{r}
+# Set method: TRUE to conduct spatial join, FALSE to use existing city column
+use_spatial_join <- FALSE
+
 # Prepare bikeways with both directions as lanes
 bikeway_miles_by_city <- sf_ut_bikeways |>
     dplyr::filter(cartocode != "9") |> # Remove 'sidewalks' and 'virtual link' connections
-    dplyr::select(facility1_class, facility2_class) |>
+    dplyr::select(city_name = city, facility1_class, facility2_class) |>
 
     # Add mileage to each bikeway segment
     dplyr::mutate(
       miles = units::set_units(sf::st_length(SHAPE), "mile")
     ) |>
 
-    # Spatial join: attach each segment to the city it falls within
-    sf::st_join(
-      sf_ut_cities |>
-          dplyr::rename(`city_name` = `name`) |>
-          dplyr::select(`city_name`),
-      join = sf::st_intersects
-    ) |>
+    (\(data) {
+      if (!use_spatial_join) {
+        # Keep existing city_name
+        data
+      } else {
+        # Remove existing city_name and perform spatial join
+        data |>
+        dplyr::select(-city_name) |>
+        sf::st_join(
+          sf_ut_cities |>
+            dplyr::rename(city_name = name) |>
+            dplyr::select(city_name),
+          join = sf::st_intersects
+        )
+      }
+    })() |>
+
+    # Drop geometry from dataframe for further processing
     sf::st_drop_geometry() |>
 
     # Treat facility1 and facility2 as separate lane directions

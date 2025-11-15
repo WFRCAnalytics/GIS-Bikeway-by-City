@@ -746,23 +746,37 @@ First 10 features:
 <p>Bikeway facilities are directional - a single bikeway segment can have different facility types in each direction (<code>facility1</code> and <code>facility2</code>). For this analysis, we treat each direction as a separate lane, meaning a 1-mile bikeway segment with bike lanes in both directions counts as 2 lane-miles of bike lanes.</p>
 <p>The <code><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer()</a></code> function stacks <code>facility1</code> and <code>facility2</code> into separate rows, effectively doubling the mileage for segments where both directions have facilities. We then group by municipality and facility type to calculate total lane miles for each combination.</p>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Prepare bikeways with both directions as lanes</span></span>
+<details class="code-fold"><summary>Show the code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Set method: TRUE to conduct spatial join, FALSE to use existing city column</span></span>
+<span><span class="va">use_spatial_join</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span>
+<span></span>
+<span><span class="co"># Prepare bikeways with both directions as lanes</span></span>
 <span><span class="va">bikeway_miles_by_city</span> <span class="op">&lt;-</span> <span class="va">sf_ut_bikeways</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">cartocode</span> <span class="op">!=</span> <span class="st">"9"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Remove 'sidewalks' and 'virtual link' connections</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">facility1_class</span>, <span class="va">facility2_class</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span>city_name <span class="op">=</span> <span class="va">city</span>, <span class="va">facility1_class</span>, <span class="va">facility2_class</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span></span>
 <span>    <span class="co"># Add mileage to each bikeway segment</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>      miles <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/units.html">set_units</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html">st_length</a></span><span class="op">(</span><span class="va">SHAPE</span><span class="op">)</span>, <span class="st">"mile"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span></span>
-<span>    <span class="co"># Spatial join: attach each segment to the city it falls within</span></span>
-<span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span></span>
-<span>      <span class="va">sf_ut_cities</span> <span class="op">|&gt;</span></span>
-<span>          <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>`city_name` <span class="op">=</span> <span class="va">`name`</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>          <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">`city_name`</span><span class="op">)</span>,</span>
-<span>      join <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="va"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">st_intersects</a></span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="op">(</span>\<span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">use_spatial_join</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="co"># Keep existing city_name</span></span>
+<span>        <span class="va">data</span></span>
+<span>      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="co"># Remove existing city_name and perform spatial join</span></span>
+<span>        <span class="va">data</span> <span class="op">|&gt;</span></span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">city_name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>        <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span></span>
+<span>          <span class="va">sf_ut_cities</span> <span class="op">|&gt;</span></span>
+<span>            <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>city_name <span class="op">=</span> <span class="va">name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>            <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">city_name</span><span class="op">)</span>,</span>
+<span>          join <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="va"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">st_intersects</a></span></span>
+<span>        <span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span><span class="op">)</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span></span>
+<span>    <span class="co"># Drop geometry from dataframe for further processing</span></span>
 <span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span></span>
 <span>    <span class="co"># Treat facility1 and facility2 as separate lane directions</span></span>
@@ -806,20 +820,20 @@ First 10 features:
 <span><span class="va">bikeway_miles_by_city</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">`All Biking Facilities`</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 256 × 8
-   city_name     `Paved Path` `Bike Lane` `Unmarked Route`  Other `Marked Route`
-   &lt;chr&gt;                &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt;
- 1 &lt;NA&gt;                 240.         6.17            969.  22065.         27.5  
- 2 Salt Lake Ci…        117.       131.               19.4   521.         41.3  
- 3 St. George            95.7        6.82             89.9   437.          0    
- 4 West Valley …         70.9       19.1              47.2   396.          0.697
- 5 Lehi                 157.        12.6              23.8   334.          0    
- 6 West Jordan           53.8       32.9              51.7   358.          0.130
- 7 South Jordan         107.        37.0              21.0   320.          1.28 
- 8 Provo                 97.3       51.6              19.9   264.          4.95 
- 9 Eagle Mounta…        140.         2.62             13.7   265.          0    
-10 Sandy                 33.2       23.2              34.5   317.          1.55 
-# ℹ 246 more rows
+<pre><code># A tibble: 253 × 8
+   city_name     `Paved Path` `Bike Lane` `Marked Route` `Unmarked Route`  Other
+   &lt;chr&gt;                &lt;dbl&gt;       &lt;dbl&gt;          &lt;dbl&gt;            &lt;dbl&gt;  &lt;dbl&gt;
+ 1 ""                   428.        47.4          34.9             1231.  24410.
+ 2 "Salt Lake C…        110.       124.           41.3               17.6   494.
+ 3 "St. George"          87.7        6.82          0                 84.5   428.
+ 4 "Lehi"               139.         9.91          0                 21.6   325.
+ 5 "West Valley…         57.2       14.9           0.885             38.9   382.
+ 6 "West Jordan"         49.4       31.6           0.130             45.8   337.
+ 7 "South Jorda…         91.0       32.7           1.28              16.5   310.
+ 8 "Provo"               89.3       50.1           4.95              17.7   252.
+ 9 "Eagle Mount…        140.         2.26          0                 12.2   259.
+10 "Sandy"               28.8       19.3           1.55              29.8   299.
+# ℹ 243 more rows
 # ℹ 2 more variables: `Protected Bike Lane` &lt;dbl&gt;,
 #   `All Biking Facilities` &lt;dbl&gt;</code></pre>
 </div>
@@ -852,20 +866,20 @@ First 10 features:
 <span></span>
 <span><span class="va">combined_miles_by_city</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 256 × 7
+<pre><code># A tibble: 253 × 7
    city_name     `Paved Path` `Protected Bike Lane` `Bike Lane` `Marked Route`
    &lt;chr&gt;                &lt;dbl&gt;                 &lt;dbl&gt;       &lt;dbl&gt;          &lt;dbl&gt;
- 1 Alpine                30.1                     0         0.7              0
+ 1 Alpine                29.5                     0         0.7              0
  2 Alta                   0                       0         0                1
  3 Altamont               0                       0         0                0
  4 Alton                  0                       0         0                0
  5 Amalga                 0.7                     0         0                0
- 6 American Fork         19.3                     2         6.9              0
+ 6 American Fork         14.4                     2         6.7              0
  7 Annabella              0                       0         0                0
  8 Antimony               0                       0         0                0
  9 Apple Valley           0                       0         0                0
 10 Aurora                 0                       0         0                0
-# ℹ 246 more rows
+# ℹ 243 more rows
 # ℹ 2 more variables: `Unmarked Route` &lt;dbl&gt;, `All Roads` &lt;dbl&gt;</code></pre>
 </div>
 </div>
@@ -1664,126 +1678,140 @@ First 10 features:
 <span id="cb37-315"><a href="#cb37-315" aria-hidden="true" tabindex="-1"></a>The <span class="in">`pivot_longer()`</span> function stacks <span class="in">`facility1`</span> and <span class="in">`facility2`</span> into separate rows, effectively doubling the mileage for segments where both directions have facilities. We then group by municipality and facility type to calculate total lane miles for each combination.</span>
 <span id="cb37-316"><a href="#cb37-316" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb37-319"><a href="#cb37-319" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb37-320"><a href="#cb37-320" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare bikeways with both directions as lanes</span></span>
-<span id="cb37-321"><a href="#cb37-321" aria-hidden="true" tabindex="-1"></a>bikeway_miles_by_city <span class="ot">&lt;-</span> sf_ut_bikeways <span class="sc">|&gt;</span></span>
-<span id="cb37-322"><a href="#cb37-322" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(cartocode <span class="sc">!=</span> <span class="st">"9"</span>) <span class="sc">|&gt;</span> <span class="co"># Remove 'sidewalks' and 'virtual link' connections</span></span>
-<span id="cb37-323"><a href="#cb37-323" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(facility1_class, facility2_class) <span class="sc">|&gt;</span></span>
-<span id="cb37-324"><a href="#cb37-324" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-325"><a href="#cb37-325" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add mileage to each bikeway segment</span></span>
-<span id="cb37-326"><a href="#cb37-326" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb37-327"><a href="#cb37-327" aria-hidden="true" tabindex="-1"></a>      <span class="at">miles =</span> units<span class="sc">::</span><span class="fu">set_units</span>(sf<span class="sc">::</span><span class="fu">st_length</span>(SHAPE), <span class="st">"mile"</span>)</span>
-<span id="cb37-328"><a href="#cb37-328" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb37-329"><a href="#cb37-329" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-330"><a href="#cb37-330" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Spatial join: attach each segment to the city it falls within</span></span>
-<span id="cb37-331"><a href="#cb37-331" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_join</span>(</span>
-<span id="cb37-332"><a href="#cb37-332" aria-hidden="true" tabindex="-1"></a>      sf_ut_cities <span class="sc">|&gt;</span></span>
-<span id="cb37-333"><a href="#cb37-333" aria-hidden="true" tabindex="-1"></a>          dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">`</span><span class="at">city_name</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">name</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
-<span id="cb37-334"><a href="#cb37-334" aria-hidden="true" tabindex="-1"></a>          dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">city_name</span><span class="st">`</span>),</span>
-<span id="cb37-335"><a href="#cb37-335" aria-hidden="true" tabindex="-1"></a>      <span class="at">join =</span> sf<span class="sc">::</span>st_intersects</span>
-<span id="cb37-336"><a href="#cb37-336" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb37-337"><a href="#cb37-337" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
-<span id="cb37-338"><a href="#cb37-338" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-339"><a href="#cb37-339" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Treat facility1 and facility2 as separate lane directions</span></span>
-<span id="cb37-340"><a href="#cb37-340" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
-<span id="cb37-341"><a href="#cb37-341" aria-hidden="true" tabindex="-1"></a>      <span class="at">cols =</span> <span class="fu">c</span>(facility1_class, facility2_class),</span>
-<span id="cb37-342"><a href="#cb37-342" aria-hidden="true" tabindex="-1"></a>      <span class="at">values_to =</span> <span class="st">"facility_class"</span></span>
-<span id="cb37-343"><a href="#cb37-343" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb37-344"><a href="#cb37-344" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-345"><a href="#cb37-345" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Apply weighting: 1.0 for bidirectional (Paved Path), 0.5 for directional facilities</span></span>
-<span id="cb37-346"><a href="#cb37-346" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb37-347"><a href="#cb37-347" aria-hidden="true" tabindex="-1"></a>      <span class="at">weighted_miles =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(</span>
-<span id="cb37-348"><a href="#cb37-348" aria-hidden="true" tabindex="-1"></a>        facility_class <span class="sc">==</span> <span class="st">"Paved Path"</span>,</span>
-<span id="cb37-349"><a href="#cb37-349" aria-hidden="true" tabindex="-1"></a>        <span class="fu">as.numeric</span>(miles) <span class="sc">*</span> <span class="fl">1.0</span>,</span>
-<span id="cb37-350"><a href="#cb37-350" aria-hidden="true" tabindex="-1"></a>        <span class="fu">as.numeric</span>(miles) <span class="sc">*</span> <span class="fl">0.5</span></span>
-<span id="cb37-351"><a href="#cb37-351" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb37-352"><a href="#cb37-352" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb37-353"><a href="#cb37-353" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-354"><a href="#cb37-354" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Summarize total lane miles by city and facility class</span></span>
-<span id="cb37-355"><a href="#cb37-355" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">group_by</span>(city_name, facility_class) <span class="sc">|&gt;</span></span>
-<span id="cb37-356"><a href="#cb37-356" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">summarize</span>(</span>
-<span id="cb37-357"><a href="#cb37-357" aria-hidden="true" tabindex="-1"></a>      <span class="at">total_lane_miles =</span> <span class="fu">sum</span>(<span class="fu">as.numeric</span>(weighted_miles), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb37-358"><a href="#cb37-358" aria-hidden="true" tabindex="-1"></a>      <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb37-359"><a href="#cb37-359" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb37-360"><a href="#cb37-360" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-361"><a href="#cb37-361" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make facility class into columns</span></span>
-<span id="cb37-362"><a href="#cb37-362" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(</span>
-<span id="cb37-363"><a href="#cb37-363" aria-hidden="true" tabindex="-1"></a>      <span class="at">names_from =</span> facility_class,</span>
-<span id="cb37-364"><a href="#cb37-364" aria-hidden="true" tabindex="-1"></a>      <span class="at">values_from =</span> total_lane_miles,</span>
-<span id="cb37-365"><a href="#cb37-365" aria-hidden="true" tabindex="-1"></a>      <span class="at">values_fill =</span> <span class="dv">0</span></span>
-<span id="cb37-366"><a href="#cb37-366" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb37-320"><a href="#cb37-320" aria-hidden="true" tabindex="-1"></a><span class="co"># Set method: TRUE to conduct spatial join, FALSE to use existing city column</span></span>
+<span id="cb37-321"><a href="#cb37-321" aria-hidden="true" tabindex="-1"></a>use_spatial_join <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb37-322"><a href="#cb37-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-323"><a href="#cb37-323" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare bikeways with both directions as lanes</span></span>
+<span id="cb37-324"><a href="#cb37-324" aria-hidden="true" tabindex="-1"></a>bikeway_miles_by_city <span class="ot">&lt;-</span> sf_ut_bikeways <span class="sc">|&gt;</span></span>
+<span id="cb37-325"><a href="#cb37-325" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(cartocode <span class="sc">!=</span> <span class="st">"9"</span>) <span class="sc">|&gt;</span> <span class="co"># Remove 'sidewalks' and 'virtual link' connections</span></span>
+<span id="cb37-326"><a href="#cb37-326" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="at">city_name =</span> city, facility1_class, facility2_class) <span class="sc">|&gt;</span></span>
+<span id="cb37-327"><a href="#cb37-327" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-328"><a href="#cb37-328" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add mileage to each bikeway segment</span></span>
+<span id="cb37-329"><a href="#cb37-329" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb37-330"><a href="#cb37-330" aria-hidden="true" tabindex="-1"></a>      <span class="at">miles =</span> units<span class="sc">::</span><span class="fu">set_units</span>(sf<span class="sc">::</span><span class="fu">st_length</span>(SHAPE), <span class="st">"mile"</span>)</span>
+<span id="cb37-331"><a href="#cb37-331" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb37-332"><a href="#cb37-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-333"><a href="#cb37-333" aria-hidden="true" tabindex="-1"></a>    (\(data) {</span>
+<span id="cb37-334"><a href="#cb37-334" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span>use_spatial_join) {</span>
+<span id="cb37-335"><a href="#cb37-335" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Keep existing city_name</span></span>
+<span id="cb37-336"><a href="#cb37-336" aria-hidden="true" tabindex="-1"></a>        data</span>
+<span id="cb37-337"><a href="#cb37-337" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb37-338"><a href="#cb37-338" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Remove existing city_name and perform spatial join</span></span>
+<span id="cb37-339"><a href="#cb37-339" aria-hidden="true" tabindex="-1"></a>        data <span class="sc">|&gt;</span></span>
+<span id="cb37-340"><a href="#cb37-340" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>city_name) <span class="sc">|&gt;</span></span>
+<span id="cb37-341"><a href="#cb37-341" aria-hidden="true" tabindex="-1"></a>        sf<span class="sc">::</span><span class="fu">st_join</span>(</span>
+<span id="cb37-342"><a href="#cb37-342" aria-hidden="true" tabindex="-1"></a>          sf_ut_cities <span class="sc">|&gt;</span></span>
+<span id="cb37-343"><a href="#cb37-343" aria-hidden="true" tabindex="-1"></a>            dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">city_name =</span> name) <span class="sc">|&gt;</span></span>
+<span id="cb37-344"><a href="#cb37-344" aria-hidden="true" tabindex="-1"></a>            dplyr<span class="sc">::</span><span class="fu">select</span>(city_name),</span>
+<span id="cb37-345"><a href="#cb37-345" aria-hidden="true" tabindex="-1"></a>          <span class="at">join =</span> sf<span class="sc">::</span>st_intersects</span>
+<span id="cb37-346"><a href="#cb37-346" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb37-347"><a href="#cb37-347" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb37-348"><a href="#cb37-348" aria-hidden="true" tabindex="-1"></a>    })() <span class="sc">|&gt;</span></span>
+<span id="cb37-349"><a href="#cb37-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-350"><a href="#cb37-350" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Drop geometry from dataframe for further processing</span></span>
+<span id="cb37-351"><a href="#cb37-351" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
+<span id="cb37-352"><a href="#cb37-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-353"><a href="#cb37-353" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Treat facility1 and facility2 as separate lane directions</span></span>
+<span id="cb37-354"><a href="#cb37-354" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb37-355"><a href="#cb37-355" aria-hidden="true" tabindex="-1"></a>      <span class="at">cols =</span> <span class="fu">c</span>(facility1_class, facility2_class),</span>
+<span id="cb37-356"><a href="#cb37-356" aria-hidden="true" tabindex="-1"></a>      <span class="at">values_to =</span> <span class="st">"facility_class"</span></span>
+<span id="cb37-357"><a href="#cb37-357" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb37-358"><a href="#cb37-358" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-359"><a href="#cb37-359" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Apply weighting: 1.0 for bidirectional (Paved Path), 0.5 for directional facilities</span></span>
+<span id="cb37-360"><a href="#cb37-360" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb37-361"><a href="#cb37-361" aria-hidden="true" tabindex="-1"></a>      <span class="at">weighted_miles =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(</span>
+<span id="cb37-362"><a href="#cb37-362" aria-hidden="true" tabindex="-1"></a>        facility_class <span class="sc">==</span> <span class="st">"Paved Path"</span>,</span>
+<span id="cb37-363"><a href="#cb37-363" aria-hidden="true" tabindex="-1"></a>        <span class="fu">as.numeric</span>(miles) <span class="sc">*</span> <span class="fl">1.0</span>,</span>
+<span id="cb37-364"><a href="#cb37-364" aria-hidden="true" tabindex="-1"></a>        <span class="fu">as.numeric</span>(miles) <span class="sc">*</span> <span class="fl">0.5</span></span>
+<span id="cb37-365"><a href="#cb37-365" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb37-366"><a href="#cb37-366" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
 <span id="cb37-367"><a href="#cb37-367" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-368"><a href="#cb37-368" aria-hidden="true" tabindex="-1"></a><span class="co"># Add total across all bike lane types</span></span>
-<span id="cb37-369"><a href="#cb37-369" aria-hidden="true" tabindex="-1"></a>bikeway_miles_by_city <span class="ot">&lt;-</span> bikeway_miles_by_city <span class="sc">|&gt;</span></span>
-<span id="cb37-370"><a href="#cb37-370" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">rowwise</span>() <span class="sc">|&gt;</span></span>
-<span id="cb37-371"><a href="#cb37-371" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb37-372"><a href="#cb37-372" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">All Biking Facilities</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(dplyr<span class="sc">::</span><span class="fu">c_across</span>(<span class="sc">!</span>city_name))</span>
+<span id="cb37-368"><a href="#cb37-368" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Summarize total lane miles by city and facility class</span></span>
+<span id="cb37-369"><a href="#cb37-369" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">group_by</span>(city_name, facility_class) <span class="sc">|&gt;</span></span>
+<span id="cb37-370"><a href="#cb37-370" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">summarize</span>(</span>
+<span id="cb37-371"><a href="#cb37-371" aria-hidden="true" tabindex="-1"></a>      <span class="at">total_lane_miles =</span> <span class="fu">sum</span>(<span class="fu">as.numeric</span>(weighted_miles), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb37-372"><a href="#cb37-372" aria-hidden="true" tabindex="-1"></a>      <span class="at">.groups =</span> <span class="st">"drop"</span></span>
 <span id="cb37-373"><a href="#cb37-373" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb37-374"><a href="#cb37-374" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">ungroup</span>()</span>
-<span id="cb37-375"><a href="#cb37-375" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-376"><a href="#cb37-376" aria-hidden="true" tabindex="-1"></a><span class="co"># View the results</span></span>
-<span id="cb37-377"><a href="#cb37-377" aria-hidden="true" tabindex="-1"></a>bikeway_miles_by_city <span class="sc">|&gt;</span></span>
-<span id="cb37-378"><a href="#cb37-378" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(dplyr<span class="sc">::</span><span class="fu">desc</span>(<span class="st">`</span><span class="at">All Biking Facilities</span><span class="st">`</span>))</span>
-<span id="cb37-379"><a href="#cb37-379" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb37-380"><a href="#cb37-380" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-381"><a href="#cb37-381" aria-hidden="true" tabindex="-1"></a>**Key Finding:** Bikeway infrastructure varies significantly by facility type across municipalities. The dataset includes various facility types such as bike lanes, protected bike lanes, shared-use paths, and trails.</span>
-<span id="cb37-382"><a href="#cb37-382" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-383"><a href="#cb37-383" aria-hidden="true" tabindex="-1"></a><span class="fu"># Combine dataframes</span></span>
-<span id="cb37-384"><a href="#cb37-384" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-385"><a href="#cb37-385" aria-hidden="true" tabindex="-1"></a><span class="fu">## Create Multimodal Summary</span></span>
-<span id="cb37-386"><a href="#cb37-386" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-387"><a href="#cb37-387" aria-hidden="true" tabindex="-1"></a>The final step combines road lane miles and bikeway lane miles by facility type into a single dataset. This allows for direct comparison of roadway and bikeway infrastructure across municipalities.</span>
-<span id="cb37-388"><a href="#cb37-388" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-389"><a href="#cb37-389" aria-hidden="true" tabindex="-1"></a>Each row represents a municipality, with columns for total road lane miles followed by columns for each bikeway facility type. Cities with zero bikeway miles for a particular facility type will show 0 in that column.</span>
-<span id="cb37-390"><a href="#cb37-390" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-393"><a href="#cb37-393" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb37-394"><a href="#cb37-394" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine with roads</span></span>
-<span id="cb37-395"><a href="#cb37-395" aria-hidden="true" tabindex="-1"></a>combined_miles_by_city <span class="ot">&lt;-</span> road_miles_by_city <span class="sc">|&gt;</span></span>
-<span id="cb37-396"><a href="#cb37-396" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert road lane miles to numeric</span></span>
-<span id="cb37-397"><a href="#cb37-397" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">`</span><span class="at">All Roads</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(total_lane_miles)) <span class="sc">|&gt;</span></span>
-<span id="cb37-398"><a href="#cb37-398" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(city_name, <span class="st">`</span><span class="at">All Roads</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
-<span id="cb37-399"><a href="#cb37-399" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Join with bikeway data</span></span>
-<span id="cb37-400"><a href="#cb37-400" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">right_join</span>(bikeway_miles_by_city, <span class="at">by =</span> <span class="st">"city_name"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb37-401"><a href="#cb37-401" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reorder columns: city_name, bike categories, total bike, then road</span></span>
-<span id="cb37-402"><a href="#cb37-402" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
-<span id="cb37-403"><a href="#cb37-403" aria-hidden="true" tabindex="-1"></a>    city_name,</span>
-<span id="cb37-404"><a href="#cb37-404" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">all_of</span>(facility_class_order),   <span class="co"># bike lane categories</span></span>
-<span id="cb37-405"><a href="#cb37-405" aria-hidden="true" tabindex="-1"></a>    <span class="sc">-</span> Other,</span>
-<span id="cb37-406"><a href="#cb37-406" aria-hidden="true" tabindex="-1"></a>    <span class="co"># `All Biking Facilities`,</span></span>
-<span id="cb37-407"><a href="#cb37-407" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">All Roads</span><span class="st">`</span></span>
-<span id="cb37-408"><a href="#cb37-408" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb37-409"><a href="#cb37-409" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Round all numeric columns to one decimal</span></span>
-<span id="cb37-410"><a href="#cb37-410" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(dplyr<span class="sc">::</span><span class="fu">across</span>(<span class="fu">where</span>(is.numeric), \(x) <span class="fu">round</span>(x, <span class="dv">1</span>)))</span>
-<span id="cb37-411"><a href="#cb37-411" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-412"><a href="#cb37-412" aria-hidden="true" tabindex="-1"></a>combined_miles_by_city</span>
-<span id="cb37-413"><a href="#cb37-413" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb37-414"><a href="#cb37-414" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-415"><a href="#cb37-415" aria-hidden="true" tabindex="-1"></a>**Key Finding:** The ratio of bikeway lane miles to road lane miles varies considerably across Utah municipalities, indicating different levels of investment in bicycle infrastructure relative to overall roadway networks.</span>
-<span id="cb37-416"><a href="#cb37-416" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-417"><a href="#cb37-417" aria-hidden="true" tabindex="-1"></a><span class="fu"># Export Final results</span></span>
-<span id="cb37-418"><a href="#cb37-418" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-419"><a href="#cb37-419" aria-hidden="true" tabindex="-1"></a>The analysis results are exported as a CSV file for further use in reports, visualizations, or other analyses. The output directory is created automatically if it doesn't exist.</span>
-<span id="cb37-420"><a href="#cb37-420" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-423"><a href="#cb37-423" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb37-424"><a href="#cb37-424" aria-hidden="true" tabindex="-1"></a><span class="co"># set data folder</span></span>
-<span id="cb37-425"><a href="#cb37-425" aria-hidden="true" tabindex="-1"></a>dir_output <span class="ot">&lt;-</span> <span class="st">"_output"</span></span>
-<span id="cb37-426"><a href="#cb37-426" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(dir_output) <span class="co"># Create a directory if it doesnt exist</span></span>
+<span id="cb37-374"><a href="#cb37-374" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-375"><a href="#cb37-375" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make facility class into columns</span></span>
+<span id="cb37-376"><a href="#cb37-376" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(</span>
+<span id="cb37-377"><a href="#cb37-377" aria-hidden="true" tabindex="-1"></a>      <span class="at">names_from =</span> facility_class,</span>
+<span id="cb37-378"><a href="#cb37-378" aria-hidden="true" tabindex="-1"></a>      <span class="at">values_from =</span> total_lane_miles,</span>
+<span id="cb37-379"><a href="#cb37-379" aria-hidden="true" tabindex="-1"></a>      <span class="at">values_fill =</span> <span class="dv">0</span></span>
+<span id="cb37-380"><a href="#cb37-380" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb37-381"><a href="#cb37-381" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-382"><a href="#cb37-382" aria-hidden="true" tabindex="-1"></a><span class="co"># Add total across all bike lane types</span></span>
+<span id="cb37-383"><a href="#cb37-383" aria-hidden="true" tabindex="-1"></a>bikeway_miles_by_city <span class="ot">&lt;-</span> bikeway_miles_by_city <span class="sc">|&gt;</span></span>
+<span id="cb37-384"><a href="#cb37-384" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">rowwise</span>() <span class="sc">|&gt;</span></span>
+<span id="cb37-385"><a href="#cb37-385" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb37-386"><a href="#cb37-386" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">All Biking Facilities</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(dplyr<span class="sc">::</span><span class="fu">c_across</span>(<span class="sc">!</span>city_name))</span>
+<span id="cb37-387"><a href="#cb37-387" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb37-388"><a href="#cb37-388" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">ungroup</span>()</span>
+<span id="cb37-389"><a href="#cb37-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-390"><a href="#cb37-390" aria-hidden="true" tabindex="-1"></a><span class="co"># View the results</span></span>
+<span id="cb37-391"><a href="#cb37-391" aria-hidden="true" tabindex="-1"></a>bikeway_miles_by_city <span class="sc">|&gt;</span></span>
+<span id="cb37-392"><a href="#cb37-392" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(dplyr<span class="sc">::</span><span class="fu">desc</span>(<span class="st">`</span><span class="at">All Biking Facilities</span><span class="st">`</span>))</span>
+<span id="cb37-393"><a href="#cb37-393" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb37-394"><a href="#cb37-394" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-395"><a href="#cb37-395" aria-hidden="true" tabindex="-1"></a>**Key Finding:** Bikeway infrastructure varies significantly by facility type across municipalities. The dataset includes various facility types such as bike lanes, protected bike lanes, shared-use paths, and trails.</span>
+<span id="cb37-396"><a href="#cb37-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-397"><a href="#cb37-397" aria-hidden="true" tabindex="-1"></a><span class="fu"># Combine dataframes</span></span>
+<span id="cb37-398"><a href="#cb37-398" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-399"><a href="#cb37-399" aria-hidden="true" tabindex="-1"></a><span class="fu">## Create Multimodal Summary</span></span>
+<span id="cb37-400"><a href="#cb37-400" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-401"><a href="#cb37-401" aria-hidden="true" tabindex="-1"></a>The final step combines road lane miles and bikeway lane miles by facility type into a single dataset. This allows for direct comparison of roadway and bikeway infrastructure across municipalities.</span>
+<span id="cb37-402"><a href="#cb37-402" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-403"><a href="#cb37-403" aria-hidden="true" tabindex="-1"></a>Each row represents a municipality, with columns for total road lane miles followed by columns for each bikeway facility type. Cities with zero bikeway miles for a particular facility type will show 0 in that column.</span>
+<span id="cb37-404"><a href="#cb37-404" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-407"><a href="#cb37-407" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb37-408"><a href="#cb37-408" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine with roads</span></span>
+<span id="cb37-409"><a href="#cb37-409" aria-hidden="true" tabindex="-1"></a>combined_miles_by_city <span class="ot">&lt;-</span> road_miles_by_city <span class="sc">|&gt;</span></span>
+<span id="cb37-410"><a href="#cb37-410" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert road lane miles to numeric</span></span>
+<span id="cb37-411"><a href="#cb37-411" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">`</span><span class="at">All Roads</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(total_lane_miles)) <span class="sc">|&gt;</span></span>
+<span id="cb37-412"><a href="#cb37-412" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(city_name, <span class="st">`</span><span class="at">All Roads</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
+<span id="cb37-413"><a href="#cb37-413" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Join with bikeway data</span></span>
+<span id="cb37-414"><a href="#cb37-414" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">right_join</span>(bikeway_miles_by_city, <span class="at">by =</span> <span class="st">"city_name"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb37-415"><a href="#cb37-415" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reorder columns: city_name, bike categories, total bike, then road</span></span>
+<span id="cb37-416"><a href="#cb37-416" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
+<span id="cb37-417"><a href="#cb37-417" aria-hidden="true" tabindex="-1"></a>    city_name,</span>
+<span id="cb37-418"><a href="#cb37-418" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">all_of</span>(facility_class_order),   <span class="co"># bike lane categories</span></span>
+<span id="cb37-419"><a href="#cb37-419" aria-hidden="true" tabindex="-1"></a>    <span class="sc">-</span> Other,</span>
+<span id="cb37-420"><a href="#cb37-420" aria-hidden="true" tabindex="-1"></a>    <span class="co"># `All Biking Facilities`,</span></span>
+<span id="cb37-421"><a href="#cb37-421" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">All Roads</span><span class="st">`</span></span>
+<span id="cb37-422"><a href="#cb37-422" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb37-423"><a href="#cb37-423" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Round all numeric columns to one decimal</span></span>
+<span id="cb37-424"><a href="#cb37-424" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(dplyr<span class="sc">::</span><span class="fu">across</span>(<span class="fu">where</span>(is.numeric), \(x) <span class="fu">round</span>(x, <span class="dv">1</span>)))</span>
+<span id="cb37-425"><a href="#cb37-425" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-426"><a href="#cb37-426" aria-hidden="true" tabindex="-1"></a>combined_miles_by_city</span>
 <span id="cb37-427"><a href="#cb37-427" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb37-428"><a href="#cb37-428" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-431"><a href="#cb37-431" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb37-432"><a href="#cb37-432" aria-hidden="true" tabindex="-1"></a>combined_miles_by_city <span class="sc">|&gt;</span></span>
-<span id="cb37-433"><a href="#cb37-433" aria-hidden="true" tabindex="-1"></a>    readr<span class="sc">::</span><span class="fu">write_csv</span>(</span>
-<span id="cb37-434"><a href="#cb37-434" aria-hidden="true" tabindex="-1"></a>        <span class="fu">file.path</span>(dir_output, <span class="st">"miles_by_city.csv"</span>),</span>
-<span id="cb37-435"><a href="#cb37-435" aria-hidden="true" tabindex="-1"></a>        <span class="at">append =</span> <span class="cn">FALSE</span></span>
-<span id="cb37-436"><a href="#cb37-436" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb37-437"><a href="#cb37-437" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb37-438"><a href="#cb37-438" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-439"><a href="#cb37-439" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Download the output files:"}</span>
-<span id="cb37-440"><a href="#cb37-440" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">miles_by_city.csv</span><span class="co">](./_output/miles_by_city.csv)</span></span>
-<span id="cb37-441"><a href="#cb37-441" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb37-429"><a href="#cb37-429" aria-hidden="true" tabindex="-1"></a>**Key Finding:** The ratio of bikeway lane miles to road lane miles varies considerably across Utah municipalities, indicating different levels of investment in bicycle infrastructure relative to overall roadway networks.</span>
+<span id="cb37-430"><a href="#cb37-430" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-431"><a href="#cb37-431" aria-hidden="true" tabindex="-1"></a><span class="fu"># Export Final results</span></span>
+<span id="cb37-432"><a href="#cb37-432" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-433"><a href="#cb37-433" aria-hidden="true" tabindex="-1"></a>The analysis results are exported as a CSV file for further use in reports, visualizations, or other analyses. The output directory is created automatically if it doesn't exist.</span>
+<span id="cb37-434"><a href="#cb37-434" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-437"><a href="#cb37-437" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb37-438"><a href="#cb37-438" aria-hidden="true" tabindex="-1"></a><span class="co"># set data folder</span></span>
+<span id="cb37-439"><a href="#cb37-439" aria-hidden="true" tabindex="-1"></a>dir_output <span class="ot">&lt;-</span> <span class="st">"_output"</span></span>
+<span id="cb37-440"><a href="#cb37-440" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(dir_output) <span class="co"># Create a directory if it doesnt exist</span></span>
+<span id="cb37-441"><a href="#cb37-441" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb37-442"><a href="#cb37-442" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-443"><a href="#cb37-443" aria-hidden="true" tabindex="-1"></a><span class="fu"># Conclusion</span></span>
-<span id="cb37-444"><a href="#cb37-444" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-445"><a href="#cb37-445" aria-hidden="true" tabindex="-1"></a>This analysis provides a comprehensive inventory of roadway and bikeway infrastructure across Utah municipalities. The methodology is reproducible and can be updated as new data becomes available from UGRC. The spatial join approach ensures accurate attribution of infrastructure to municipalities, though users should note that roads and bikeways in unincorporated areas will appear under the NA category.</span>
+<span id="cb37-445"><a href="#cb37-445" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb37-446"><a href="#cb37-446" aria-hidden="true" tabindex="-1"></a>combined_miles_by_city <span class="sc">|&gt;</span></span>
+<span id="cb37-447"><a href="#cb37-447" aria-hidden="true" tabindex="-1"></a>    readr<span class="sc">::</span><span class="fu">write_csv</span>(</span>
+<span id="cb37-448"><a href="#cb37-448" aria-hidden="true" tabindex="-1"></a>        <span class="fu">file.path</span>(dir_output, <span class="st">"miles_by_city.csv"</span>),</span>
+<span id="cb37-449"><a href="#cb37-449" aria-hidden="true" tabindex="-1"></a>        <span class="at">append =</span> <span class="cn">FALSE</span></span>
+<span id="cb37-450"><a href="#cb37-450" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb37-451"><a href="#cb37-451" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb37-452"><a href="#cb37-452" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-453"><a href="#cb37-453" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Download the output files:"}</span>
+<span id="cb37-454"><a href="#cb37-454" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">miles_by_city.csv</span><span class="co">](./_output/miles_by_city.csv)</span></span>
+<span id="cb37-455"><a href="#cb37-455" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb37-456"><a href="#cb37-456" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-457"><a href="#cb37-457" aria-hidden="true" tabindex="-1"></a><span class="fu"># Conclusion</span></span>
+<span id="cb37-458"><a href="#cb37-458" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-459"><a href="#cb37-459" aria-hidden="true" tabindex="-1"></a>This analysis provides a comprehensive inventory of roadway and bikeway infrastructure across Utah municipalities. The methodology is reproducible and can be updated as new data becomes available from UGRC. The spatial join approach ensures accurate attribution of infrastructure to municipalities, though users should note that roads and bikeways in unincorporated areas will appear under the NA category.</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
