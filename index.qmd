@@ -298,8 +298,7 @@ bikeway_miles_by_city <- sf_ut_bikeways |>
 
     # Add mileage to each bikeway segment
     dplyr::mutate(
-      # FIXME: weight each side as 0.5 of the segment length
-      miles = units::set_units(sf::st_length(SHAPE), "mile") * 0.5
+      miles = units::set_units(sf::st_length(SHAPE), "mile")
     ) |>
 
     # Spatial join: attach each segment to the city it falls within
@@ -317,10 +316,19 @@ bikeway_miles_by_city <- sf_ut_bikeways |>
       values_to = "facility_class"
     ) |>
 
+    # Apply weighting: 1.0 for bidirectional (Paved Path), 0.5 for directional facilities
+    dplyr::mutate(
+      weighted_miles = dplyr::if_else(
+        facility_class == "Paved Path",
+        as.numeric(miles) * 1.0,
+        as.numeric(miles) * 0.5
+      )
+    ) |>
+
     # Summarize total lane miles by city and facility class
     dplyr::group_by(city_name, facility_class) |>
     dplyr::summarize(
-      total_lane_miles = sum(as.numeric(miles), na.rm = TRUE),
+      total_lane_miles = sum(as.numeric(weighted_miles), na.rm = TRUE),
       .groups = "drop"
     ) |>
 
