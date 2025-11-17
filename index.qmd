@@ -31,6 +31,7 @@ The following packages are required for this analysis. Install them if not alrea
 install.packages("dplyr")
 install.packages("tidyr")
 install.packages("readr")
+install.packages("stringr")
 install.packages("forcats")
 install.packages("fs")
 install.packages("sf")
@@ -46,6 +47,7 @@ install.packages("tmap")
 library(dplyr) # for data manipulation
 library(tidyr) # for tidy data operations (pivot functions)
 library(readr) # read and write tabular data
+library(stringr) # manipulate strings
 library(forcats) # process categorical data
 library(fs) # for file system management
 library(sf) # for simple feature geometries
@@ -73,7 +75,7 @@ All spatial datasets are downloaded from UGRC's ArcGIS REST services. To improve
 
 ```{r}
 # set data folder
-dir_data <- "_data/UGRC"
+dir_data <- "_data"
 fs::dir_create(dir_data) # Create a directory if it doesnt exist
 ```
 
@@ -83,7 +85,7 @@ Municipal boundaries are used to aggregate roadway and bikeway data by city. The
 
 ```{r}
 # Define paths
-path_ut_cities <- file.path(dir_data, "UtahMunicipalBoundaries.gdb")
+path_ut_cities <- file.path(dir_data, "UGRC", "UtahMunicipalBoundaries.gdb")
 
 # Download if not exists
 if (!fs::file_exists(path_ut_cities)) {
@@ -107,13 +109,43 @@ if (!fs::file_exists(path_ut_cities)) {
 tmap::qtm(sf_ut_cities)
 ```
 
+## Utah County Boundaries
+
+County boundaries are used to aggregate roadway and bikeway data for unincorporated areas in Utah.
+
+```{r}
+# Define paths
+path_ut_counties <- file.path(dir_data, "UGRC", "UtahCountyBoundaries.gdb")
+
+# Download if not exists
+if (!fs::file_exists(path_ut_counties)) {
+  # Read data using arcgis package
+  sf_ut_counties <- arcgislayers::arc_read(
+    "https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/UtahCountyBoundaries/FeatureServer/0",
+    crs = PROJECT_CRS
+  ) |> janitor::clean_names()
+  # Write to a GeoDatabase
+  sf_ut_counties |>
+    sf::st_write(path_ut_counties, layer = "UtahCountyBoundaries", append = FALSE)
+} else {
+  # Read from local copy
+  sf_ut_counties <- sf::st_read(path_ut_counties) |>
+    sf::st_transform(PROJECT_CRS)
+}
+```
+
+```{r}
+#| eval: false
+tmap::qtm(sf_ut_cities)
+```
+
 ## Utah Roadways
 
 The Utah Roads dataset contains all roadway centerlines statewide, including the number of through lanes for each road segment. This forms the basis for calculating road lane miles.
 
 ```{r}
 # Define paths
-path_ut_roads <- file.path(dir_data, "UtahRoads.gdb")
+path_ut_roads <- file.path(dir_data, "UGRC", "UtahRoads.gdb")
 
 # Download if not exists
 if (!fs::file_exists(path_ut_roads)) {
@@ -143,7 +175,7 @@ The Bikeways dataset contains all existing bicycle facilities in Utah. Each segm
 
 ```{r}
 # Define paths
-path_ut_bikeways <- file.path(dir_data, "Bikeways.gdb")
+path_ut_bikeways <- file.path(dir_data, "UGRC", "Bikeways.gdb")
 
 # Download if not exists
 if (!fs::file_exists(path_ut_bikeways)) {
@@ -168,6 +200,38 @@ tmap::qtm(sf_ut_bikeways)
 ```
 
 # Road Lane Miles by Municipality
+
+## Add Unincorporated Areas
+
+```{r}
+tmap::qtm(sf_ut_cities, col = "blue", fill = NULL, size = 1) +
+  tmap::qtm(sf_ut_counties, col = "red", fill = NULL, size = 2)
+```
+
+```{r}
+# Create combined municipal boundaries including unincorporated areas
+sf_ut_municipal <- dplyr::bind_rows(
+  # Add incorporated cities
+  sf_ut_cities |>
+    dplyr::select(Name = name),
+
+  # Add unincorporated county areas
+  sf_ut_counties |>
+    dplyr::mutate(
+      # Convert county name to proper case and add "(Unincorporated)"
+      Name = paste0(stringr::str_to_title(name), " County (Unincorporated)")
+    ) |>
+    dplyr::select(Name) |>
+    # Remove areas that overlap with cities
+    sf::st_difference(
+      sf_ut_cities |>
+        sf::st_union()
+    )
+)
+
+# View the result
+sf_ut_municipal
+```
 
 ## Calculate Lane Miles
 
@@ -199,14 +263,12 @@ road_miles_by_city <- sf_ut_roads |>
 
     # Spatial join: attach each road segment to the city it falls within
     sf::st_join(
-      sf_ut_cities |>
-        dplyr::rename(`city_name` = `name`) |>
-        dplyr::select(`city_name`),
+      sf_ut_municipal,
       join = sf::st_intersects
     ) |>
 
     # Group and summarize: total lane miles per city
-    dplyr::group_by(city_name) |>
+    dplyr::group_by(Name) |>
     dplyr::summarize(
       total_lane_miles = sum(lane_miles, na.rm = TRUE),
       .groups = "drop"
@@ -291,35 +353,20 @@ Bikeway facilities are directional - a single bikeway segment can have different
 The `pivot_longer()` function stacks `facility1` and `facility2` into separate rows, effectively doubling the mileage for segments where both directions have facilities. We then group by municipality and facility type to calculate total lane miles for each combination.
 
 ```{r}
-# Set method: TRUE to conduct spatial join, FALSE to use existing city column
-use_spatial_join <- FALSE
-
 # Prepare bikeways with both directions as lanes
 bikeway_miles_by_city <- sf_ut_bikeways |>
     dplyr::filter(cartocode != "9") |> # Remove 'sidewalks' and 'virtual link' connections
-    dplyr::select(city_name = city, facility1_class, facility2_class) |>
+    dplyr::select( facility1_class, facility2_class) |>
 
     # Add mileage to each bikeway segment
     dplyr::mutate(
       miles = units::set_units(sf::st_length(SHAPE), "mile")
     ) |>
 
-    (\(data) {
-      if (!use_spatial_join) {
-        # Keep existing city_name
-        data
-      } else {
-        # Remove existing city_name and perform spatial join
-        data |>
-        dplyr::select(-city_name) |>
-        sf::st_join(
-          sf_ut_cities |>
-            dplyr::rename(city_name = name) |>
-            dplyr::select(city_name),
-          join = sf::st_intersects
-        )
-      }
-    })() |>
+    sf::st_join(
+      sf_ut_municipal,
+      join = sf::st_intersects
+    ) |>
 
     # Drop geometry from dataframe for further processing
     sf::st_drop_geometry() |>
@@ -340,7 +387,7 @@ bikeway_miles_by_city <- sf_ut_bikeways |>
     ) |>
 
     # Summarize total lane miles by city and facility class
-    dplyr::group_by(city_name, facility_class) |>
+    dplyr::group_by(Name, facility_class) |>
     dplyr::summarize(
       total_lane_miles = sum(as.numeric(weighted_miles), na.rm = TRUE),
       .groups = "drop"
@@ -357,7 +404,7 @@ bikeway_miles_by_city <- sf_ut_bikeways |>
 bikeway_miles_by_city <- bikeway_miles_by_city |>
     dplyr::rowwise() |>
     dplyr::mutate(
-      `All Biking Facilities` = sum(dplyr::c_across(!city_name))
+      `All Biking Facilities` = sum(dplyr::c_across(!Name))
     ) |>
     dplyr::ungroup()
 
@@ -381,12 +428,12 @@ Each row represents a municipality, with columns for total road lane miles follo
 combined_miles_by_city <- road_miles_by_city |>
   # Convert road lane miles to numeric
   dplyr::mutate(`All Roads` = as.numeric(total_lane_miles)) |>
-  dplyr::select(city_name, `All Roads`) |>
+  dplyr::select(Name, `All Roads`) |>
   # Join with bikeway data
-  dplyr::right_join(bikeway_miles_by_city, by = "city_name") |>
-  # Reorder columns: city_name, bike categories, total bike, then road
+  dplyr::right_join(bikeway_miles_by_city, by = "Name") |>
+  # Reorder columns: Name, bike categories, total bike, then road
   dplyr::select(
-    city_name,
+    Name,
     dplyr::all_of(facility_class_order),   # bike lane categories
     - Other,
     # `All Biking Facilities`,
