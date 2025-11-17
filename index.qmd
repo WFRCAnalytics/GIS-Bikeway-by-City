@@ -233,6 +233,10 @@ sf_ut_municipal <- dplyr::bind_rows(
 sf_ut_municipal
 ```
 
+```{r}
+tmap::qtm(sf_ut_municipal, fill = NULL)
+```
+
 ## Calculate Lane Miles
 
 Road lane miles are calculated by multiplying the length of each road segment by the number of through lanes. For road segments where the through lane count is missing (NA), we assume 1 lane as a conservative estimate.
@@ -381,7 +385,7 @@ bikeway_miles_by_city <- sf_ut_bikeways |>
     dplyr::mutate(
       weighted_miles = dplyr::if_else(
         facility_class == "Paved Path",
-        as.numeric(miles) * 1.0,
+        as.numeric(miles) * 0.5, # TODO: change this to 1 if needed
         as.numeric(miles) * 0.5
       )
     ) |>
